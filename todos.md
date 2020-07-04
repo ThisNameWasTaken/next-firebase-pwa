@@ -1,0 +1,3 @@
+- [] add material ui
+- [] make this a pwa
+- [] replace react with preact
