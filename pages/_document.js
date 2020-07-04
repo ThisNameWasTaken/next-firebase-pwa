@@ -8,10 +8,14 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <title>Chatr</title>
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
+          />
+
+          <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap"
+            rel="stylesheet"
           />
 
           <meta name="theme-color" content={lightTheme.palette.primary.main} />

@@ -16,5 +16,7 @@ module.exports = withPwa({
   env,
   pwa: {
     dest: 'public',
+    skipWaiting: true,
+    clientsClaim: true,
   },
 });

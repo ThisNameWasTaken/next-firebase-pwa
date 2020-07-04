@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import Link from 'next/link';
-import { useUser } from '../utils/auth/useUser';
+import withPrivateRoute from '../hocs/withPrivateRoute';
 
 const fetcher = (url, token) =>
   fetch(url, {
@@ -9,47 +9,14 @@ const fetcher = (url, token) =>
     credentials: 'same-origin',
   }).then(res => res.json());
 
-const Index = () => {
-  const { user, logout } = useUser();
-  const { data, error } = useSWR(
-    user ? ['/api/getFood', user.token] : null,
-    fetcher
-  );
-  if (!user) {
-    return (
-      <>
-        <p>Hi there!</p>
-        <p>
-          You are not signed in.{' '}
-          <Link href={'/auth'}>
-            <a>Sign in</a>
-          </Link>
-        </p>
-        <p>
-          Or go to
-          <Link href={'/example'}>
-            <a>this static page</a>
-          </Link>
-        </p>
-      </>
-    );
-  }
+const Index = props => {
+  const { token } = props;
+  const { data, error } = useSWR(['/api/getFood', token], fetcher);
 
   return (
     <div>
       <div>
-        <p>You're signed in. Email: {user.email}</p>
-        <p
-          style={{
-            display: 'inline-block',
-            color: 'blue',
-            textDecoration: 'underline',
-            cursor: 'pointer',
-          }}
-          onClick={() => logout()}
-        >
-          Log out
-        </p>
+        <p>Your token is {token}</p>
       </div>
       <div>
         <Link href={'/example'}>
@@ -66,4 +33,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default withPrivateRoute(Index);

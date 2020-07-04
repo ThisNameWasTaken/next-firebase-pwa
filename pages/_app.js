@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { lightTheme } from '../theme';
+import Head from 'next/head';
 
 export default function MyApp(props) {
   const { Component, pageProps } = props;
@@ -16,6 +17,9 @@ export default function MyApp(props) {
 
   return (
     <>
+      <Head>
+        <title>Chatr</title>
+      </Head>
       <ThemeProvider theme={lightTheme}>
         <CssBaseline />
         <Component {...pageProps} />

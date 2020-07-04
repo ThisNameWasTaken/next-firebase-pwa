@@ -1,4 +1,4 @@
-import firebaseAdmin from '../../utils/auth/firebaseAdmin';
+import firebaseAdmin from '../../utils/firebaseAdmin';
 
 const favoriteFoods = ['pizza', 'burger', 'chips', 'tortilla'];
 

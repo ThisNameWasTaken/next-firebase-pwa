@@ -9,17 +9,19 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "clsx": "^1.1.1",
     "dotenv": "^8.2.0",
     "firebase": "^7.15.5",
     "firebase-admin": "^8.12.1",
     "js-cookie": "2.2.1",
     "next": "latest",
     "next-pwa": "^3.0.1",
-    "react-firebaseui": "4.1.0",
-    "swr": "0.2.3",
     "preact": "^10.2.1",
     "preact-render-to-string": "^5.1.4",
     "react": "github:preact-compat/react#1.0.0",
-    "react-dom": "github:preact-compat/react-dom#1.0.0"
+    "react-dom": "github:preact-compat/react-dom#1.0.0",
+    "react-firebaseui": "4.1.0",
+    "react-hook-form": "^6.0.1",
+    "swr": "0.2.3"
   }
 }
