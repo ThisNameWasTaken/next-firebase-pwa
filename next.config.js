@@ -10,6 +10,11 @@ const env = Object.keys(process.env)
     {}
   );
 
-module.exports = {
+const withPwa = require('next-pwa');
+
+module.exports = withPwa({
   env,
-};
+  pwa: {
+    dest: 'public',
+  },
+});
