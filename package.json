@@ -15,9 +15,11 @@
     "js-cookie": "2.2.1",
     "next": "latest",
     "next-pwa": "^3.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-firebaseui": "4.1.0",
-    "swr": "0.2.3"
+    "swr": "0.2.3",
+    "preact": "^10.2.1",
+    "preact-render-to-string": "^5.1.4",
+    "react": "github:preact-compat/react#1.0.0",
+    "react-dom": "github:preact-compat/react-dom#1.0.0"
   }
 }
