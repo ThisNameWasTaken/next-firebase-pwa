@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 
 import Facebook from '../components/icons/facebook';
 import Google from '../components/icons/google';
-import Twitter from '../components/icons/Twitter';
+import Twitter from '../components/icons/twitter';
 
 import { useFirebase } from '../hooks/useFirebase';
 
