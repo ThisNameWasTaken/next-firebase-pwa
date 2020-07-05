@@ -36,7 +36,6 @@ export function useFirebase() {
           .catch(console.error);
       } else {
         removeCookie('token');
-        router.push('/sign-in');
       }
     });
 
