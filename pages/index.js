@@ -1,35 +1,56 @@
-import useSWR from 'swr';
-import Link from 'next/link';
+import { AppBar, Toolbar, makeStyles, List } from '@material-ui/core';
+import { Search } from '@material-ui/icons';
+
 import withPrivateRoute from '../hocs/withPrivateRoute';
+import useCurrentUser from '../hooks/useCurrentUser';
+import ChatList from '../components/ChatList';
+import UserInfo from '../components/UserInfo/UserInfo';
 
-const fetcher = (url, token) =>
-  fetch(url, {
-    method: 'GET',
-    headers: new Headers({ 'Content-Type': 'application/json', token }),
-    credentials: 'same-origin',
-  }).then(res => res.json());
+const useStyles = makeStyles(theme => ({
+  searchBar: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.getContrastText(theme.palette.background.default),
+  },
+  searchIcon: {
+    marginRight: theme.spacing(1),
+  },
+  fab: {
+    position: 'fixed',
+    // 56 is bottom navigation's height
+    bottom: 56 + theme.spacing(1),
+    right: theme.spacing(2),
+  },
+  fabIcon: {
+    marginRight: theme.spacing(1),
+  },
+  bottomNavigation: {
+    position: 'fixed',
+    // display: 'block',
+    width: '100%',
+    bottom: 0,
+    left: 0,
+  },
+}));
 
-const Index = props => {
-  const { token } = props;
-  const { data, error } = useSWR(['/api/getFood', token], fetcher);
+const Index = () => {
+  const classes = useStyles();
+  const currentUser = useCurrentUser();
 
   return (
-    <div>
-      <div>
-        <p>Your token is {token}</p>
-      </div>
-      <div>
-        <Link href={'/example'}>
-          <a>Another example page</a>
-        </Link>
-      </div>
-      {error && <div>Failed to fetch food!</div>}
-      {data ? (
-        <div>Your favorite food is {data.food}.</div>
-      ) : (
-        <div>Loading...</div>
-      )}
-    </div>
+    <>
+      <AppBar position="static">
+        <Toolbar variant="dense">
+          <List>
+            <UserInfo user={currentUser} />
+          </List>
+        </Toolbar>
+        <Toolbar variant="dense" className={classes.searchBar}>
+          <Search className={classes.searchIcon} />
+          Search ...
+        </Toolbar>
+      </AppBar>
+      <ChatList />
+    </>
   );
 };
 
