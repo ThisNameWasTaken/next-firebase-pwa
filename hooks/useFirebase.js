@@ -30,12 +30,14 @@ export function useFirebase() {
 
     unsubscribe = firebaseModule.auth().onAuthStateChanged(user => {
       if (user) {
+        setCookie('uid', user.uid);
         user
           .getIdToken()
           .then(token => setCookie('token', token))
           .catch(console.error);
       } else {
         removeCookie('token');
+        removeCookie('uid');
       }
     });
 
