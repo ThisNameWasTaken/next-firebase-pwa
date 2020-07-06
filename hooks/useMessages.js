@@ -72,43 +72,6 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
             ...doc.data(),
           }));
 
-          const urlPromises = [];
-
-          messages.forEach((message, messageIndex) => {
-            if (!message.photo) return;
-
-            for (const size in message.photo.sources) {
-              urlPromises.push(
-                storage
-                  .ref(message.photo.sources[size].initial)
-                  .getDownloadURL()
-                  .then(url => ({
-                    url,
-                    size,
-                    type: 'initial',
-                    chatIndex: messageIndex,
-                  }))
-              );
-              urlPromises.push(
-                storage
-                  .ref(message.photo.sources[size].webp)
-                  .getDownloadURL()
-                  .then(url => ({
-                    url,
-                    size,
-                    type: 'webp',
-                    chatIndex: messageIndex,
-                  }))
-              );
-            }
-          });
-
-          const photoResponses = await Promise.all(urlPromises);
-
-          photoResponses.forEach(({ url, size, type, chatIndex }) => {
-            messages[chatIndex].photo.sources[size][type] = url;
-          });
-
           setMessages(messages);
         });
     })();

@@ -60,7 +60,7 @@ const ChatList = () => {
           ))
         : chats.map((chat, chatIndex) => (
             <React.Fragment key={chat.id}>
-              <Link href="/chats/[id]" as={`/chats/${chat.id}`} passHref>
+              <Link href={`/chat?chatId=${chat.id}`} passHref>
                 <ListItem
                   alignItems="center"
                   className={classes.chatListItem}

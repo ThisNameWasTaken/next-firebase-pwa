@@ -25,53 +25,30 @@ const useChats = () => {
             .doc(userId)
             .collection('chats')
             .onSnapshot(async collection => {
-              const chatPromises = collection.docs.map(doc => {
-                return firestore.collection('chats').doc(doc.id).get();
+              const chats = [];
+              collection.docs.forEach(doc => {
+                firestore
+                  .collection('chats')
+                  .doc(doc.id)
+                  .onSnapshot(async doc => {
+                    const chatIndex = chats.findIndex(
+                      chat => chat.id === doc.id
+                    );
+                    const newChatData = { ...doc.data(), id: doc.id };
+
+                    newChatData.avatar.sources = undefined;
+
+                    if (chatIndex !== -1) {
+                      chats[chatIndex] = newChatData;
+                    } else {
+                      chats.push(newChatData);
+                    }
+
+                    if (chats.length === collection.docs.length) {
+                      setChats(chats);
+                    }
+                  });
               });
-
-              const chats = (await Promise.all(chatPromises)).map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-
-              const urlPromises = [];
-
-              chats.forEach((chat, chatIndex) => {
-                if (!chat?.avatar?.sources) return;
-
-                for (const size in chat.avatar.sources) {
-                  urlPromises.push(
-                    storage
-                      .ref(chat.avatar.sources[size].initial)
-                      .getDownloadURL()
-                      .then(url => ({
-                        url,
-                        size,
-                        type: 'initial',
-                        chatIndex,
-                      }))
-                  );
-                  urlPromises.push(
-                    storage
-                      .ref(chat.avatar.sources[size].webp)
-                      .getDownloadURL()
-                      .then(url => ({
-                        url,
-                        size,
-                        type: 'webp',
-                        chatIndex,
-                      }))
-                  );
-                }
-              });
-
-              const avatarResponses = await Promise.all(urlPromises);
-
-              avatarResponses.forEach(({ url, size, type, chatIndex }) => {
-                chats[chatIndex].avatar.sources[size][type] = url;
-              });
-
-              setChats(chats);
             });
         } else {
           setChats(null);

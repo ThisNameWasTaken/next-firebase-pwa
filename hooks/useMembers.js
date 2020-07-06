@@ -28,45 +28,10 @@ const useMembers = ({ chatId, membersDefault = {} }) => {
               id: doc.id,
               ...doc.data(),
             };
-          });
 
-          const urlPromises = [];
-
-          for (const memberId in members) {
-            const member = members[memberId];
-
-            if (!member.avatar) continue;
-
-            for (const size in member.avatar.sources) {
-              urlPromises.push(
-                storage
-                  .ref(member.avatar.sources[size].initial)
-                  .getDownloadURL()
-                  .then(url => ({
-                    url,
-                    size,
-                    type: 'initial',
-                    memberId,
-                  }))
-              );
-              urlPromises.push(
-                storage
-                  .ref(member.avatar.sources[size].webp)
-                  .getDownloadURL()
-                  .then(url => ({
-                    url,
-                    size,
-                    type: 'webp',
-                    memberId,
-                  }))
-              );
+            if (members[doc.id].avatar) {
+              members[doc.id].avatar.sources = undefined;
             }
-          }
-
-          const avatarResponses = await Promise.all(urlPromises);
-
-          avatarResponses.forEach(({ url, size, type, memberId }) => {
-            members[memberId].avatar.sources[size][type] = url;
           });
 
           setMembers(members);
