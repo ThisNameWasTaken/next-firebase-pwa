@@ -68,7 +68,7 @@ const useChats = () => {
           firestore
             .collection('chats')
             .add({
-              title,
+              name: title,
               createdAt: Date.now(),
               updatedAt: Date.now(),
             })

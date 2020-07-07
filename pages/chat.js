@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import fetch from 'isomorphic-fetch';
-import Link from 'next/link';
-import Router, { useRouter } from 'next/router';
-
+import React, { useEffect } from 'react';
 import {
   makeStyles,
   InputAdornment,
@@ -18,13 +14,8 @@ import {
   ListItem,
   IconButton,
 } from '@material-ui/core';
+import { Send, EmojiEmotionsOutlined } from '@material-ui/icons';
 
-import {
-  ArrowBack,
-  EmojiEmotions,
-  Send,
-  EmojiEmotionsOutlined,
-} from '@material-ui/icons';
 import useMessages from '../hooks/useMessages';
 import Image from '../components/Image';
 import { useForm } from 'react-hook-form';
@@ -32,12 +23,7 @@ import useMembers from '../hooks/useMembers';
 import clsx from 'clsx';
 import withPrivateRoute from '../hocs/withPrivateRoute';
 import getQueryParams from '../utils/getQueryParams';
-
-const BackButton = () => (
-  <IconButton aria-label="back" color="primary" onClick={Router.back}>
-    <ArrowBack />
-  </IconButton>
-);
+import BackButton from '../components/BackButton';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {

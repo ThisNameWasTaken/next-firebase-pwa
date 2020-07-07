@@ -1,10 +1,11 @@
-import { AppBar, Toolbar, makeStyles, List } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { AppBar, Toolbar, makeStyles, List, Fab } from '@material-ui/core';
+import { Search, Chat } from '@material-ui/icons';
 
 import withPrivateRoute from '../hocs/withPrivateRoute';
 import useCurrentUser from '../hooks/useCurrentUser';
 import ChatList from '../components/ChatList';
 import UserInfo from '../components/UserInfo/UserInfo';
+import Link from 'next/link';
 
 const useStyles = makeStyles(theme => ({
   searchBar: {
@@ -50,6 +51,17 @@ const Index = () => {
         </Toolbar>
       </AppBar>
       <ChatList />
+      <Link href="/create-chat" passHref>
+        <Fab
+          variant="extended"
+          className={classes.fab}
+          color="secondary"
+          component="a"
+        >
+          <Chat className={classes.fabIcon} />
+          Create Chat
+        </Fab>
+      </Link>
     </>
   );
 };

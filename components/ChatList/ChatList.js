@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import {
   List,
@@ -17,6 +17,10 @@ import { useStyles } from './styles';
 const ChatList = () => {
   const classes = useStyles();
   const { chats } = useChats();
+
+  useEffect(() => {
+    console.log({ chats });
+  }, [chats]);
 
   return (
     <List>
