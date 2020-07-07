@@ -1,40 +1,38 @@
 import { useEffect, useState } from 'react';
 import { useFirebase } from './useFirebase';
 
-const useMembers = ({ chatId, membersDefault = {} }) => {
-  const [members, setMembers] = useState(membersDefault);
+const useMembers = ({ chatId }) => {
+  const [members, setMembers] = useState({});
   const firebase = useFirebase();
 
   useEffect(() => {
     (async () => {
-      const [firestore, storage] = await Promise.all([
-        firebase.firestore(),
-        firebase.storage(),
-      ]);
+      const firestore = await firebase.firestore();
 
       firestore
         .collection('chats')
         .doc(chatId)
         .collection('members')
         .onSnapshot(async collection => {
-          const memberPromises = collection.docs.map(doc => {
-            return firestore.collection('users').doc(doc.id).get();
-          });
-
           const members = {};
 
-          (await Promise.all(memberPromises)).forEach(doc => {
-            members[doc.id] = {
-              id: doc.id,
-              ...doc.data(),
-            };
+          collection.docs.forEach(doc => {
+            const userId = doc.id;
 
-            if (members[doc.id].avatar) {
-              members[doc.id].avatar.sources = undefined;
-            }
+            firestore
+              .collection('users')
+              .doc(userId)
+              .onSnapshot(async doc => {
+                const user = await doc.data();
+                user.id = userId;
+
+                members[userId] = user;
+
+                if (Object.keys(members).length === collection.docs.length) {
+                  setMembers(members);
+                }
+              });
           });
-
-          setMembers(members);
         });
     })();
   }, []);

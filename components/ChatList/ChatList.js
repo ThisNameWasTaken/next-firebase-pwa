@@ -16,7 +16,7 @@ import { useStyles } from './styles';
 
 const ChatList = () => {
   const classes = useStyles();
-  const chats = useChats();
+  const { chats } = useChats();
 
   return (
     <List>

@@ -268,16 +268,18 @@ export default function SignUp() {
 
     console.log({ user });
 
-    const storageRef = await storage.ref();
+    if (formData.avatar && formData.avatar[0]) {
+      const storageRef = await storage.ref();
 
-    const uploadResult = await storageRef
-      .child(`avatars/users/${user.uid}/${formData.avatar[0].name}`)
-      .put(formData.avatar[0]);
+      const uploadResult = await storageRef
+        .child(`avatars/users/${user.uid}/${formData.avatar[0].name}`)
+        .put(formData.avatar[0]);
 
-    await firestore
-      .collection('users')
-      .doc(user.uid)
-      .set({ name: formData.name });
+      await firestore
+        .collection('users')
+        .doc(user.uid)
+        .set({ name: formData.name, email: formData.email });
+    }
 
     Router.push('/');
   }
