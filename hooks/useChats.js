@@ -12,7 +12,7 @@ const useChats = () => {
     createChat,
     setCreateChat,
   ] = useState(
-    () => ({
+    () => async ({
       avatar = undefined,
       title = '',
       members = [{ id: '', role: '' }],
@@ -60,37 +60,32 @@ const useChats = () => {
         });
 
       setCreateChat(
-        () => ({
+        () => async ({
           avatar = undefined,
           title = '',
           members = [{ id: '', role: '' }],
         }) => {
-          firestore
-            .collection('chats')
-            .add({
-              name: title,
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-            })
-            .then(doc => {
-              const chatId = doc.id;
-
-              members.forEach(member => {
-                firestore
-                  .collection('chats')
-                  .doc(chatId)
-                  .collection('members')
-                  .doc(member.id)
-                  .set({ role: member.role });
-              });
-            });
+          const newChatDoc = await firestore.collection('chats').add({
+            name: title,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          });
 
           if (avatar) {
             storage
               .ref()
-              .child(`avatars/chats/${userId}/${avatar.name}`)
+              .child(`avatars/chats/${newChatDoc.id}/${avatar.name}`)
               .put(avatar);
           }
+
+          await newChatDoc
+            .collection('members')
+            .doc(userId)
+            .set({ role: 'admin' });
+
+          members.forEach(({ id, role }) => {
+            newChatDoc.collection('members').doc(id).set({ role });
+          });
         }
       );
     })();
