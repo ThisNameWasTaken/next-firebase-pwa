@@ -129,13 +129,10 @@ const ChatInfo = () => {
 
   const classes = useStyles();
 
-  const members = Object.keys(_members).reduce(
-    (acc, id) => [...acc, _members[id]],
-    []
-  );
+  const [members, setMembers] = useState([]);
 
   const userId = getCookie('uid');
-  const isAdmin = _members[userId]?.role === 'admin';
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [menuAnchor, setMenuAnchor] = useState(undefined);
 
@@ -157,6 +154,13 @@ const ChatInfo = () => {
       // memberIdAction
     }
   };
+
+  useEffect(() => {
+    setMembers(
+      Object.keys(_members).reduce((acc, id) => [...acc, _members[id]], [])
+    );
+    setIsAdmin(_members[userId]?.role === 'admin');
+  }, [_members]);
 
   return (
     <>
