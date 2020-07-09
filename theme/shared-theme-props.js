@@ -1,3 +1,4 @@
+/** @type {import("@material-ui/core").ThemeOptions} */
 const sharedThemeProps = {
   typography: {
     fontFamily: ['Nunito', 'Helvetica', 'Arial', 'sans-serif'].join(','),
@@ -10,6 +11,18 @@ const sharedThemeProps = {
   },
   shape: {
     borderRadius: 36,
+  },
+  overrides: {
+    MuiButton: {
+      outlined: {
+        borderWidth: 2,
+      },
+    },
+    MuiMenu: {
+      paper: {
+        borderRadius: 8,
+      },
+    },
   },
 };
 
