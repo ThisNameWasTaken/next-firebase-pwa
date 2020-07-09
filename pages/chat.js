@@ -13,8 +13,10 @@ import {
   AppBar,
   ListItem,
   IconButton,
+  fade,
 } from '@material-ui/core';
 import { Send, EmojiEmotionsOutlined } from '@material-ui/icons';
+import { get as getCookie } from 'js-cookie';
 
 import useMessages from '../hooks/useMessages';
 import Image from '../components/Image';
@@ -28,6 +30,10 @@ import BackButton from '../components/BackButton';
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
     display: 'flex',
+    marginBottom: 8,
+  },
+  chatBubbleInfo: {
+    margin: 'auto',
     marginBottom: 8,
   },
   chatBubbleLeft: {
@@ -68,6 +74,11 @@ const useChatBubbleStyles = makeStyles(theme => ({
     borderBottomLeftRadius: 4,
     transform: 'translateY(-16px)',
   },
+  paperInfo: {
+    border: `2px solid ${theme.palette.info.main}`,
+    background: fade(theme.palette.info.main, 0.1),
+    color: theme.palette.info.main,
+  },
   paperRight: {
     background: '#8338EC',
     color: '#fff',
@@ -77,53 +88,75 @@ const useChatBubbleStyles = makeStyles(theme => ({
   text: {
     padding: '.5rem 1rem',
   },
+  textInfo: {
+    fontWeight: 800,
+  },
 }));
 
 const ChatBubble = ({
   avatar = '',
   text = '',
   photo = undefined,
-  isSelf,
+  isSelf = false,
   mergePrevBubble = false,
   mergeNextBubble = false,
+  isInfo = false,
 }) => {
   const classes = useChatBubbleStyles();
 
   return (
-    <div
-      className={clsx(
-        classes.chatBubble,
-        isSelf ? classes.chatBubbleRight : classes.chatBubbleLeft
+    <>
+      {isInfo ? (
+        <div className={clsx(classes.chatBubble, classes.chatBubbleInfo)}>
+          <Paper variant="outlined" className={classes.paperInfo}>
+            <Typography
+              variant="body1"
+              className={clsx(classes.text, classes.textInfo)}
+            >
+              {text}
+            </Typography>
+          </Paper>
+        </div>
+      ) : (
+        <div
+          className={clsx(
+            classes.chatBubble,
+            isSelf ? classes.chatBubbleRight : classes.chatBubbleLeft
+          )}
+        >
+          <Avatar
+            className={clsx(
+              classes.avatar,
+              mergeNextBubble && classes.hideAvatar
+            )}
+          >
+            {avatar && !mergeNextBubble && (
+              <Image
+                sources={avatar.sources}
+                preview={avatar.preview}
+                alt=""
+                width={64}
+                height={64}
+              />
+            )}
+          </Avatar>
+          <Paper
+            variant="outlined"
+            className={clsx(
+              isSelf ? classes.paperRight : classes.paperLeft,
+              mergePrevBubble &&
+                (isSelf ? classes.mergePrevRight : classes.mergePrevLeft),
+              mergeNextBubble &&
+                (isSelf ? classes.mergeNextRight : classes.mergeNextLeft)
+            )}
+          >
+            <Typography variant="body1" className={classes.text}>
+              {text}
+            </Typography>
+          </Paper>
+        </div>
       )}
-    >
-      <Avatar
-        className={clsx(classes.avatar, mergeNextBubble && classes.hideAvatar)}
-      >
-        {avatar && !mergeNextBubble && (
-          <Image
-            sources={avatar.sources}
-            preview={avatar.preview}
-            alt=""
-            width={64}
-            height={64}
-          />
-        )}
-      </Avatar>
-      <Paper
-        variant="outlined"
-        className={clsx(
-          isSelf ? classes.paperRight : classes.paperLeft,
-          mergePrevBubble &&
-            (isSelf ? classes.mergePrevRight : classes.mergePrevLeft),
-          mergeNextBubble &&
-            (isSelf ? classes.mergeNextRight : classes.mergeNextLeft)
-        )}
-      >
-        <Typography variant="body1" className={classes.text}>
-          {text}
-        </Typography>
-      </Paper>
-    </div>
+    </>
   );
 };
 
@@ -148,6 +181,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Chats = props => {
+  const userId = getCookie('uid');
+
   const classes = useStyles();
 
   const { handleSubmit, register, setValue } = useForm();
@@ -206,9 +241,10 @@ const Chats = props => {
               key={message.id}
               text={message.text}
               avatar={members[message.authorId]?.avatar}
-              // isSelf={message.authorId === props.decodedToken.uid}
+              isSelf={message.authorId === userId}
               mergePrevBubble={message.authorId === prevAuthorId}
               mergeNextBubble={message.authorId === nextAuthorId}
+              isInfo={!message.authorId}
             />
           );
         })}
