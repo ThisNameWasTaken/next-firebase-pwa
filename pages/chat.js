@@ -26,6 +26,8 @@ import clsx from 'clsx';
 import withPrivateRoute from '../hocs/withPrivateRoute';
 import getQueryParams from '../utils/getQueryParams';
 import BackButton from '../components/BackButton';
+import useChat from '../hooks/useChat';
+import ChatInfo from '../components/ChatInfo/ChatInfo';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -172,11 +174,7 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
   },
   list: {
-    padding: 0,
-  },
-  listItem: {
-    paddingLeft: 0,
-    paddingRight: 0,
+    // padding: 0,
   },
 }));
 
@@ -188,6 +186,8 @@ const Chats = props => {
   const { handleSubmit, register, setValue } = useForm();
 
   const { chatId } = getQueryParams();
+
+  const { chat } = useChat();
 
   const { messages, sendMessage } = useMessages({
     chatId,
@@ -216,12 +216,7 @@ const Chats = props => {
         <Toolbar variant="dense" className={classes.toolBar}>
           <BackButton />
           <List className={classes.list}>
-            <ListItem alignItems="center" className={classes.listItem}>
-              <ListItemAvatar>
-                <Avatar src="https://firebasestorage.googleapis.com/v0/b/auth-b7a6c.appspot.com/o/avatars%2Fchats%2F7AWjx17DPlPLj7rJvvVq%2F06c83741-9be8-4577-b82b-161871e9b504--64w.webp?alt=media&token=82afea32-14e7-4ea6-a65c-ee43601b37e0"></Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Hello Group" />
-            </ListItem>
+            <ChatInfo chat={chat} />
           </List>
         </Toolbar>
       </AppBar>
