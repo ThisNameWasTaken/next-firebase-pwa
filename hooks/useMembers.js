@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useFirebase } from './useFirebase';
+import { get as getCookie } from 'js-cookie';
 
 const useMembers = ({ chatId }) => {
-  const [members, setMembers] = useState({});
   const firebase = useFirebase();
+  const [members, setMembers] = useState({});
+  const [leaveChat, setLeaveChat] = useState(() => () => {});
+  const [addMember, setAddMember] = useState(() => (userId = '') => {});
+  const [removeMember, setRemoveMember] = useState(() => (userId = '') => {});
+  const [addAdmin, setAddAdmin] = useState(() => (userId = '') => {});
 
   useEffect(() => {
+    const userId = getCookie('uid');
+
     (async () => {
       const firestore = await firebase.firestore();
 
@@ -35,10 +42,62 @@ const useMembers = ({ chatId }) => {
               });
           });
         });
+
+      setRemoveMember(() => async userId => {
+        try {
+          return await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('members')
+            .doc(userId)
+            .delete();
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
+      setLeaveChat(() => async () => {
+        try {
+          return await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('members')
+            .doc(userId)
+            .delete();
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
+      setAddMember(() => async userId => {
+        try {
+          return await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('members')
+            .doc(userId)
+            .set({ role: 'member' });
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
+      setAddAdmin(() => async userId => {
+        try {
+          return await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('members')
+            .doc(userId)
+            .set({ role: 'admin' });
+        } catch (err) {
+          console.error(err);
+        }
+      });
     })();
   }, []);
 
-  return { members };
+  return { members, leaveChat, addMember, removeMember, addAdmin };
 };
 
 export default useMembers;
