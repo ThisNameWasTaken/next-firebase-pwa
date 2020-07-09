@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   makeStyles,
   InputAdornment,
@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import { Send, EmojiEmotionsOutlined, InfoOutlined } from '@material-ui/icons';
 import { get as getCookie } from 'js-cookie';
+import Link from 'next/link';
 
 import useMessages from '../hooks/useMessages';
 import Image from '../components/Image';
@@ -25,7 +26,6 @@ import getQueryParams from '../utils/getQueryParams';
 import BackButton from '../components/BackButton';
 import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
-import ChatDrawer from '../components/ChatDrawer/ChatDrawer';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -194,16 +194,6 @@ const Chats = props => {
 
   const { members } = useMembers({ chatId });
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  function closeDrawer() {
-    setIsDrawerOpen(false);
-  }
-
-  function openDrawer() {
-    setIsDrawerOpen(true);
-  }
-
   function onSubmit({ message }) {
     sendMessage({ text: message });
     setValue('message', '');
@@ -227,22 +217,17 @@ const Chats = props => {
           <List className={classes.list}>
             <ChatInfo chat={chat} />
           </List>
-          <IconButton
-            aria-label="show chat info"
-            color="primary"
-            onClick={openDrawer}
-          >
-            <InfoOutlined aria-hidden="true" />
-          </IconButton>
+          <Link href={`/chat-info?chatId=${chatId}`} passHref>
+            <IconButton
+              aria-label="show chat info"
+              color="primary"
+              component="a"
+            >
+              <InfoOutlined aria-hidden="true" />
+            </IconButton>
+          </Link>
         </Toolbar>
       </AppBar>
-
-      <ChatDrawer
-        open={isDrawerOpen}
-        onClose={closeDrawer}
-        chat={chat}
-        members={members}
-      />
 
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: 78 }}>
         {messages.map((message, index) => {

@@ -66,6 +66,9 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.error.main,
     background: theme.palette.background.default,
   },
+  memberActions: {
+    marginRight: theme.spacing(-2),
+  },
 }));
 
 export { useStyles };
