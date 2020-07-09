@@ -6,6 +6,7 @@ import useCurrentUser from '../hooks/useCurrentUser';
 import ChatList from '../components/ChatList';
 import UserInfo from '../components/UserInfo/UserInfo';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 const useStyles = makeStyles(theme => ({
   searchBar: {
@@ -36,6 +37,13 @@ const useStyles = makeStyles(theme => ({
 const Index = () => {
   const classes = useStyles();
   const currentUser = useCurrentUser();
+
+  useEffect(() => {
+    const testWorker = new Worker('./test.worker.js');
+
+    testWorker.postMessage('my message from the main thread');
+    testWorker.addEventListener('message', console.log);
+  }, []);
 
   return (
     <>

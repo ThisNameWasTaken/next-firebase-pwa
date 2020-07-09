@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   makeStyles,
   InputAdornment,
@@ -8,14 +8,11 @@ import {
   Avatar,
   Toolbar,
   List,
-  ListItemAvatar,
-  ListItemText,
   AppBar,
-  ListItem,
   IconButton,
   fade,
 } from '@material-ui/core';
-import { Send, EmojiEmotionsOutlined } from '@material-ui/icons';
+import { Send, EmojiEmotionsOutlined, InfoOutlined } from '@material-ui/icons';
 import { get as getCookie } from 'js-cookie';
 
 import useMessages from '../hooks/useMessages';
@@ -28,6 +25,7 @@ import getQueryParams from '../utils/getQueryParams';
 import BackButton from '../components/BackButton';
 import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
+import ChatDrawer from '../components/ChatDrawer/ChatDrawer';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -175,6 +173,7 @@ const useStyles = makeStyles(theme => ({
   },
   list: {
     // padding: 0,
+    marginRight: 'auto',
   },
 }));
 
@@ -194,6 +193,16 @@ const Chats = props => {
   });
 
   const { members } = useMembers({ chatId });
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  function closeDrawer() {
+    setIsDrawerOpen(false);
+  }
+
+  function openDrawer() {
+    setIsDrawerOpen(true);
+  }
 
   function onSubmit({ message }) {
     sendMessage({ text: message });
@@ -218,8 +227,22 @@ const Chats = props => {
           <List className={classes.list}>
             <ChatInfo chat={chat} />
           </List>
+          <IconButton
+            aria-label="show chat info"
+            color="primary"
+            onClick={openDrawer}
+          >
+            <InfoOutlined aria-hidden="true" />
+          </IconButton>
         </Toolbar>
       </AppBar>
+
+      <ChatDrawer
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+        chat={chat}
+        members={members}
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: 78 }}>
         {messages.map((message, index) => {
