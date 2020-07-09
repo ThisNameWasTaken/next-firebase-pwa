@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { get as getCookie } from 'js-cookie';
+
 import { useFirebase } from './useFirebase';
 
 const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
@@ -16,19 +18,18 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
 
   useEffect(() => {
     (async () => {
-      const [auth, firestore, storage] = await Promise.all([
-        firebase.auth(),
+      const [firestore, storage] = await Promise.all([
         firebase.firestore(),
         firebase.storage(),
       ]);
 
-      const user = auth.currentUser;
+      const userId = getCookie('uid');
 
       setSendMessage(() => ({ text = '', photo }) => {
         if (photo) {
           storage
             .ref()
-            .child(`photos/chats/${user.uid}/${photo.name}`)
+            .child(`photos/chats/${userId}/${photo.name}`)
             .put(photo);
         }
 
@@ -38,7 +39,7 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
           .collection('messages')
           .add({
             text,
-            authorId: user.uid,
+            authorId: userId,
             createdAt: Date.now(),
           });
       });
