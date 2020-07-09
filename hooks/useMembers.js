@@ -18,6 +18,7 @@ const useMembers = ({ chatId }) => {
 
           collection.docs.forEach(doc => {
             const userId = doc.id;
+            const docData = doc.data();
 
             firestore
               .collection('users')
@@ -26,7 +27,7 @@ const useMembers = ({ chatId }) => {
                 const user = await doc.data();
                 user.id = userId;
 
-                members[userId] = user;
+                members[userId] = { ...docData, ...user, id: userId };
 
                 if (Object.keys(members).length === collection.docs.length) {
                   setMembers(members);
