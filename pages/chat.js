@@ -34,7 +34,11 @@ const useChatBubbleStyles = makeStyles(theme => ({
   },
   chatBubbleInfo: {
     margin: 'auto',
-    marginBottom: 8,
+    marginBottom: 24,
+
+    '& + &': {
+      marginTop: -16,
+    },
   },
   chatBubbleLeft: {
     alignItems: 'flex-end',
