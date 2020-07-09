@@ -166,11 +166,13 @@ const ChatBubble = ({
 
 const useStyles = makeStyles(theme => ({
   textField: {
-    margin: theme.spacing(1),
+    padding: theme.spacing(1),
     position: 'fixed',
-    width: `calc(100% - ${theme.spacing(2)}px)`,
     bottom: 0,
     left: 0,
+    right: 0,
+    zIndex: 1,
+    background: theme.palette.background.default,
   },
   toolBar: {
     padding: 0,
