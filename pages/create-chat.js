@@ -1,28 +1,24 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
+import { useRouter } from 'next/router';
 import {
   makeStyles,
   AppBar,
   Toolbar,
   List,
   ListItem,
-  ListItemAvatar,
-  Avatar,
   ListItemText,
   Container,
   TextField,
-  ListItemSecondaryAction,
-  Checkbox,
   Button,
 } from '@material-ui/core';
 import { get as getCookie } from 'js-cookie';
 import BackButton from '../components/BackButton';
-import Image from '../components/Image';
 import { useForm } from 'react-hook-form';
 import { useFirebase } from '../hooks/useFirebase';
 import useUsers from '../hooks/useUsers';
 import { AddPhotoAlternate } from '@material-ui/icons';
 import AvatarEdit from '../components/AvatarEdit';
-import { useRouter } from 'next/router';
+import UserCheckList from '../components/UserCheckList';
 
 const useStyles = makeStyles(theme => ({
   avatarEdit: {
@@ -43,6 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     marginTop: 48,
+    maxWidth: 700,
   },
   createGroupButton: {
     margin: 'auto',
@@ -54,7 +51,7 @@ const CreateChat = () => {
   const classes = useStyles();
   const avatarInputRef = useRef(null);
 
-  const { handleSubmit, register, errors, setValue } = useForm();
+  const { handleSubmit, register, errors } = useForm();
   const firebase = useFirebase();
 
   const users = useUsers({ excludeSelf: true });
@@ -63,11 +60,8 @@ const CreateChat = () => {
   const router = useRouter();
 
   const handleToggle = value => () => {
-    console.log('handle toggle');
     const currentIndex = checked.indexOf(value);
-    console.log({ currentIndex });
     const newChecked = [...checked];
-    console.log({ newChecked });
 
     if (currentIndex === -1) {
       newChecked.push(value);
@@ -77,10 +71,6 @@ const CreateChat = () => {
 
     setChecked(newChecked);
   };
-
-  useEffect(() => {
-    console.log({ checked });
-  }, [checked]);
 
   async function createGroup({ title, avatar }) {
     console.log({ title, avatar, checked });
@@ -126,94 +116,61 @@ const CreateChat = () => {
         </Toolbar>
       </AppBar>
 
-      <main className={classes.content}>
+      <Container className={classes.content} component="main">
         <form onSubmit={handleSubmit(createGroup)}>
-          <Container>
-            <TextField
-              className={classes.textField}
-              variant="outlined"
-              label="Group title"
-              name="title"
-              type="text"
-              id="group-title"
-              error={errors.title}
-              helperText={errors?.title?.message}
-              inputRef={register({ required: 'Group title is required' })}
+          <AvatarEdit
+            className={classes.avatarEdit}
+            inputRef={avatarInputRef}
+          />
+
+          <Button
+            variant="contained"
+            color="primary"
+            component="label"
+            startIcon={<AddPhotoAlternate />}
+          >
+            <input
+              accept="image/*"
+              type="file"
+              name="avatar"
+              hidden
+              ref={ref => {
+                avatarInputRef.current = ref;
+                register(ref);
+              }}
             />
+            Add photo
+          </Button>
 
-            <AvatarEdit
-              className={classes.avatarEdit}
-              inputRef={avatarInputRef}
-            />
+          <TextField
+            className={classes.textField}
+            variant="outlined"
+            label="Group title"
+            name="title"
+            type="text"
+            id="group-title"
+            error={errors.title}
+            helperText={errors?.title?.message}
+            inputRef={register({ required: 'Group title is required' })}
+          />
 
-            <Button
-              variant="contained"
-              color="primary"
-              component="label"
-              startIcon={<AddPhotoAlternate />}
-            >
-              <input
-                accept="image/*"
-                type="file"
-                name="avatar"
-                hidden
-                ref={ref => {
-                  avatarInputRef.current = ref;
-                  register(ref);
-                }}
-              />
-              Add photo
-            </Button>
+          <UserCheckList
+            users={users}
+            checked={checked}
+            onCheck={handleToggle}
+          />
 
-            <List>
-              {users &&
-                users.map(user => {
-                  const labelId = `user-${user.id}`;
-                  return (
-                    <ListItem
-                      key={user.id}
-                      button
-                      onClick={handleToggle(user.id)}
-                    >
-                      <ListItemAvatar>
-                        <Avatar>
-                          {/* @ts-ignore */}
-                          <Image
-                            preview={user.avatar.preview}
-                            sources={user.avatar.sources}
-                          />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        id={labelId}
-                        primary={user.name}
-                        secondary={user.email}
-                      />
-                      <ListItemSecondaryAction tabIndex={-1}>
-                        <Checkbox
-                          edge="end"
-                          checked={checked.indexOf(user.id) !== -1}
-                          onChange={handleToggle(user.id)}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  );
-                })}
-            </List>
-
-            <Button
-              className={classes.createGroupButton}
-              variant="contained"
-              color="primary"
-              size="large"
-              type="submit"
-            >
-              Create group
-            </Button>
-          </Container>
+          <Button
+            className={classes.createGroupButton}
+            variant="contained"
+            color="primary"
+            size="large"
+            type="submit"
+          >
+            Create group
+          </Button>
         </form>
-      </main>
+      </Container>
     </>
   );
 };
