@@ -15,7 +15,6 @@ import {
   InputAdornment,
   Tooltip,
   IconButton,
-  Paper,
 } from '@material-ui/core';
 import { Check, Visibility, VisibilityOff } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
@@ -326,7 +325,7 @@ export default function SignUp() {
   return (
     <main>
       <div className={classes.root}>
-        <Paper className={classes.card}>
+        <div className={classes.card}>
           <Stepper
             className={classes.stepper}
             activeStep={activeStep}
@@ -503,7 +502,7 @@ export default function SignUp() {
                 : 'confirm'}
             </Button>
           </div>
-        </Paper>
+        </div>
       </div>
     </main>
   );
