@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'hidden',
     display: 'block',
+    borderRadius: 8,
   },
   cardActionArea: {
     display: 'block',
@@ -55,9 +56,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const AvatarEdit = ({ className = '', register, ...otherProps }) => {
+const AvatarEdit = ({
+  className = '',
+  register,
+  src: _src = undefined,
+  ...otherProps
+}) => {
   const classes = useStyles();
-  const [src, setSrc] = useState(null);
+  const [src, setSrc] = useState(_src);
 
   const inputRef = useRef(null);
 
@@ -108,7 +114,7 @@ const AvatarEdit = ({ className = '', register, ...otherProps }) => {
       </Card>
       <FormHelperText className={classes.helperText}>
         {src
-          ? 'Tap again on the image to change it'
+          ? 'Tap on the image to change it'
           : 'Tap on the icon to upload an image'}
       </FormHelperText>
     </>

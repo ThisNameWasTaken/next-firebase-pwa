@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 
 import useMembers from '../hooks/useMembers';
 import useChat from '../hooks/useChat';
@@ -20,16 +21,30 @@ import {
   List,
   Divider,
   ListItemSecondaryAction,
-  MenuItem,
-  Menu,
 } from '@material-ui/core';
 import { MoreVert, PersonAdd, ExitToApp, Edit } from '@material-ui/icons';
-import Skeleton from '@material-ui/lab/Skeleton';
-import clsx from 'clsx';
 import { get as getCookie } from 'js-cookie';
 
 import Image from '../components/Image';
 import BackButton from '../components/BackButton';
+
+// Menu
+const Menu = dynamic(() => import('@material-ui/core/Menu'), {
+  // This has to be enabled so that the component mounts correctly the first time
+  // ssr: false,
+});
+const MenuItem = dynamic(() => import('@material-ui/core/MenuItem'), {
+  ssr: false,
+});
+
+// Dialogs
+const EditChatDialog = dynamic(() => import('../components/EditChatDialog'), {
+  ssr: false,
+});
+
+const AddMemberDialog = dynamic(() => import('../components/AddMemberDialog'), {
+  ssr: false,
+});
 
 const useStyles = makeStyles(theme => ({
   toolBar: {
@@ -125,7 +140,13 @@ const ChatInfo = () => {
 
   const { chat } = useChat();
 
-  const { members: _members } = useMembers({ chatId });
+  const {
+    members: _members,
+    leaveChat,
+    addMember,
+    addAdmin,
+    removeMember,
+  } = useMembers({ chatId });
 
   const classes = useStyles();
 
@@ -149,9 +170,9 @@ const ChatInfo = () => {
     setMenuAnchor(undefined);
 
     if (action === 'make admin') {
-      // memberIdAction
+      addAdmin(memberIdAction);
     } else if (action === 'remove') {
-      // memberIdAction
+      removeMember(memberIdAction);
     }
   };
 
@@ -162,18 +183,38 @@ const ChatInfo = () => {
     setIsAdmin(_members[userId]?.role === 'admin');
   }, [_members]);
 
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  function openEditDialog() {
+    setIsEditDialogOpen(true);
+  }
+
+  function closeEditDialog(data) {
+    setIsEditDialogOpen(false);
+  }
+
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
+
+  function openAddMemberDialog() {
+    setIsAddMemberDialogOpen(true);
+  }
+
+  function closeAddMemberDialog(data) {
+    setIsAddMemberDialogOpen(false);
+  }
+
   return (
     <>
       <div className={classes.content}>
         <AppBar position="fixed">
           <Toolbar className={classes.toolBar}>
             <BackButton color="inherit" />
-            {/* <div style={{ marginLeft: 'auto' }} /> */}
             <Button
               className={classes.leaveGroupButton}
               variant="text"
               color="inherit"
               endIcon={<ExitToApp aria-hidden="true" />}
+              onClick={leaveChat}
             >
               <span className={classes.leaveGroupButtonLabel}>Leave group</span>
             </Button>
@@ -202,6 +243,7 @@ const ChatInfo = () => {
                     className={classes.editChatButton}
                     color="inherit"
                     aria-label="edit chat title and avatar"
+                    onClick={openEditDialog}
                   >
                     <Edit aria-hidden="true" />
                   </IconButton>
@@ -273,6 +315,7 @@ const ChatInfo = () => {
         anchorEl={menuAnchor}
         open={!!menuAnchor}
         onClose={closeMenu}
+        keepMounted
       >
         <MenuItem onClick={event => closeMenu('make admin')}>
           Make admin
@@ -282,10 +325,29 @@ const ChatInfo = () => {
         </MenuItem>
       </Menu>
 
-      <Fab className={classes.fab} variant="extended" color="primary">
+      <Fab
+        className={classes.fab}
+        variant="extended"
+        color="primary"
+        onClick={openAddMemberDialog}
+      >
         <PersonAdd className={classes.fabIcon} />
         Add member
       </Fab>
+
+      <EditChatDialog
+        open={isEditDialogOpen}
+        onAccept={closeEditDialog}
+        onReject={closeEditDialog}
+        src={chat?.avatar?.sources[720].initial}
+        name={chat?.name}
+      />
+
+      <AddMemberDialog
+        open={isAddMemberDialogOpen}
+        onAccept={closeAddMemberDialog}
+        onReject={closeAddMemberDialog}
+      />
     </>
   );
 };

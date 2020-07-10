@@ -23,6 +23,11 @@ const sharedThemeProps = {
         borderRadius: 8,
       },
     },
+    MuiDialog: {
+      paper: {
+        borderRadius: 12,
+      },
+    },
   },
 };
 
