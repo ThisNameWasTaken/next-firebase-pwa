@@ -1,24 +1,16 @@
 export default function getSrcFromImageFile(file) {
-  const appPrefix = 'chatr-inlined-image-sources';
-  const fileName = `${appPrefix}-${file.name}-${file.lastModified}`;
-
-  const storedSrc = localStorage.getItem(fileName);
-
-  if (storedSrc) return Promise.resolve(storedSrc);
-
   return new Promise((resolve, reject) => {
-    try {
-      const reader = new FileReader();
+    const dataUrlWorker = new Worker('/data-url.worker.js');
 
-      reader.readAsDataURL(file);
+    function handleWorkerMessage(event) {
+      const { src, err } = event.data;
+      err ? reject(err) : resolve(src);
 
-      reader.addEventListener('load', event => {
-        const src = event.target.result;
-        localStorage.setItem(fileName, src);
-        resolve(src);
-      });
-    } catch (err) {
-      reject(err);
+      dataUrlWorker.removeEventListener('message', handleWorkerMessage);
+      dataUrlWorker.terminate();
     }
+
+    dataUrlWorker.postMessage({ file });
+    dataUrlWorker.addEventListener('message', handleWorkerMessage);
   });
 }
