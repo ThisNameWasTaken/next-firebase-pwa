@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme => ({
  *  sources: {[key: number]: { initial: string, webp: string }}
  *  preview: string,
  *  alt: string,
- *  width: number,
- *  height: number
+ *  width: number | string,
+ *  height: number | string
  * }} param0
  */
 const Image = ({
