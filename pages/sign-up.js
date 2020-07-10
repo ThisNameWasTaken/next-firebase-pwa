@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
-import Head from 'next/head';
 import Router from 'next/router';
 import {
   Stepper,
@@ -18,12 +17,7 @@ import {
   IconButton,
   Paper,
 } from '@material-ui/core';
-import {
-  Check,
-  Visibility,
-  VisibilityOff,
-  AddPhotoAlternate,
-} from '@material-ui/icons';
+import { Check, Visibility, VisibilityOff } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 
 import { Slides, Slide } from '../components/slides';
@@ -184,7 +178,6 @@ export default function SignUp() {
   const [activeStep, setActiveStep] = useState(0);
   const [prevActiveStep, setPrevActiveStep] = useState(-1);
   const firebase = useFirebase();
-  const avatarInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -467,28 +460,9 @@ export default function SignUp() {
                   <div className={classes.avatarEditContainer}>
                     <AvatarEdit
                       className={classes.avatarEdit}
-                      inputRef={avatarInputRef}
+                      register={avatarForm.register}
                     />
                   </div>
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    component="label"
-                    startIcon={<AddPhotoAlternate />}
-                  >
-                    <input
-                      accept="image/*"
-                      type="file"
-                      name="avatar"
-                      hidden
-                      ref={ref => {
-                        avatarInputRef.current = ref;
-                        avatarForm.register(ref);
-                      }}
-                    />
-                    Add photo
-                  </Button>
                 </form>
               </div>
             </Slide>

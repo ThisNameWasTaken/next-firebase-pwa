@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import {
   makeStyles,
@@ -16,7 +16,6 @@ import BackButton from '../components/BackButton';
 import { useForm } from 'react-hook-form';
 import { useFirebase } from '../hooks/useFirebase';
 import useUsers from '../hooks/useUsers';
-import { AddPhotoAlternate } from '@material-ui/icons';
 import AvatarEdit from '../components/AvatarEdit';
 import UserCheckList from '../components/UserCheckList';
 
@@ -49,7 +48,6 @@ const useStyles = makeStyles(theme => ({
 
 const CreateChat = () => {
   const classes = useStyles();
-  const avatarInputRef = useRef(null);
 
   const { handleSubmit, register, errors } = useForm();
   const firebase = useFirebase();
@@ -118,29 +116,7 @@ const CreateChat = () => {
 
       <Container className={classes.content} component="main">
         <form onSubmit={handleSubmit(createGroup)}>
-          <AvatarEdit
-            className={classes.avatarEdit}
-            inputRef={avatarInputRef}
-          />
-
-          <Button
-            variant="contained"
-            color="primary"
-            component="label"
-            startIcon={<AddPhotoAlternate />}
-          >
-            <input
-              accept="image/*"
-              type="file"
-              name="avatar"
-              hidden
-              ref={ref => {
-                avatarInputRef.current = ref;
-                register(ref);
-              }}
-            />
-            Add photo
-          </Button>
+          <AvatarEdit className={classes.avatarEdit} register={register} />
 
           <TextField
             className={classes.textField}
