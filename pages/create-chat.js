@@ -9,7 +9,8 @@ import {
   ListItemText,
   Container,
   TextField,
-  Button,
+  Fab,
+  Typography,
 } from '@material-ui/core';
 import { get as getCookie } from 'js-cookie';
 import BackButton from '../components/BackButton';
@@ -18,13 +19,15 @@ import { useFirebase } from '../hooks/useFirebase';
 import useUsers from '../hooks/useUsers';
 import AvatarEdit from '../components/AvatarEdit';
 import UserCheckList from '../components/UserCheckList';
+import { GroupAdd } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
-  avatarEdit: {
-    //
+  avatarEditContainer: {
+    margin: theme.spacing(2, 0, 1, 0),
   },
   textField: {
     width: '100%',
+    margin: theme.spacing(1, 0),
   },
   toolBar: {
     padding: 0,
@@ -37,12 +40,21 @@ const useStyles = makeStyles(theme => ({
     paddingRight: 0,
   },
   content: {
-    marginTop: 48,
+    paddingTop: 48,
+    paddingBottom: theme.spacing(2) + 48,
     maxWidth: 700,
   },
   createGroupButton: {
-    margin: 'auto',
-    display: 'block',
+    position: 'fixed',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+  createGroupButtonIcon: {
+    marginRight: theme.spacing(1),
+  },
+  membersText: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(-1),
   },
 }));
 
@@ -108,7 +120,13 @@ const CreateChat = () => {
           <BackButton />
           <List className={classes.list}>
             <ListItem alignItems="center" className={classes.listItem}>
-              <ListItemText primary="Create Chat" />
+              <ListItemText
+                primary={
+                  <Typography variant="h6" component="h1">
+                    Create Chat
+                  </Typography>
+                }
+              />
             </ListItem>
           </List>
         </Toolbar>
@@ -116,12 +134,14 @@ const CreateChat = () => {
 
       <Container className={classes.content} component="main">
         <form onSubmit={handleSubmit(createGroup)}>
-          <AvatarEdit className={classes.avatarEdit} register={register} />
+          <div className={classes.avatarEditContainer}>
+            <AvatarEdit register={register} />
+          </div>
 
           <TextField
             className={classes.textField}
             variant="outlined"
-            label="Group title"
+            label="Group name"
             name="title"
             type="text"
             id="group-title"
@@ -130,21 +150,29 @@ const CreateChat = () => {
             inputRef={register({ required: 'Group title is required' })}
           />
 
+          <Typography
+            className={classes.membersText}
+            variant="h6"
+            component="h2"
+          >
+            Select members
+          </Typography>
+
           <UserCheckList
             users={users}
             checked={checked}
             onCheck={handleToggle}
           />
 
-          <Button
+          <Fab
+            variant="extended"
             className={classes.createGroupButton}
-            variant="contained"
             color="primary"
-            size="large"
             type="submit"
           >
+            <GroupAdd className={classes.createGroupButtonIcon} />
             Create group
-          </Button>
+          </Fab>
         </form>
       </Container>
     </>

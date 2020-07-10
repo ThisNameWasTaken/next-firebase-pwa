@@ -51,6 +51,7 @@ const useStyles = makeStyles(theme => ({
   },
   helperText: {
     textAlign: 'center',
+    fontSize: '1rem',
   },
 }));
 
