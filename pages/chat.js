@@ -181,6 +181,12 @@ const useStyles = makeStyles(theme => ({
     // padding: 0,
     marginRight: 'auto',
   },
+  messagesContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    paddingTop: 68,
+    paddingBottom: 80,
+  },
 }));
 
 const Chats = props => {
@@ -235,7 +241,7 @@ const Chats = props => {
         </Toolbar>
       </AppBar>
 
-      <div style={{ display: 'flex', flexDirection: 'column', marginTop: 78 }}>
+      <div className={classes.messagesContainer}>
         {messages.map((message, index) => {
           const nextAuthorId =
             index < messages.length - 1
