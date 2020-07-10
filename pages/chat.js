@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   makeStyles,
   InputAdornment,
@@ -31,6 +31,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
     display: 'flex',
     marginBottom: 8,
+    overflowAnchor: 'none',
   },
   chatBubbleInfo: {
     margin: 'auto',
@@ -187,6 +188,10 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 68,
     paddingBottom: 80,
   },
+  anchor: {
+    overflowAnchor: 'auto',
+    height: '1px',
+  },
 }));
 
 const Chats = props => {
@@ -219,6 +224,13 @@ const Chats = props => {
 
   useEffect(() => {
     console.log({ messages });
+  }, [messages]);
+
+  useEffect(() => {
+    if (!window.didScrollToBottom) {
+      window.scrollTo(0, document.body.scrollHeight);
+      window.didScrollToBottom = messages && messages.length > 0;
+    }
   }, [messages]);
 
   return (
@@ -263,6 +275,8 @@ const Chats = props => {
             />
           );
         })}
+
+        <div className={classes.anchor} />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
