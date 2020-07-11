@@ -13,6 +13,7 @@ import {
   fade,
 } from '@material-ui/core';
 import { Send, EmojiEmotionsOutlined, InfoOutlined } from '@material-ui/icons';
+import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import { get as getCookie } from 'js-cookie';
 import Link from 'next/link';
 
@@ -26,6 +27,7 @@ import getQueryParams from '../utils/getQueryParams';
 import BackButton from '../components/BackButton';
 import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
+import { delayCallback, cancelDelayCallback } from '../utils/delayCallback';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -188,6 +190,48 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 68,
     paddingBottom: 80,
   },
+  typingUsers: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 6px',
+    transition: theme.transitions.create('transform'),
+    willChange: 'transform',
+    transform: 'translateX(-100%)',
+  },
+  typingUsersSlide: {
+    transform: 'translateX(0%)',
+  },
+  typingUsersAvatar: {
+    width: 30,
+    height: 30,
+    marginRight: theme.spacing(1),
+  },
+  typingUsersAvatarContainer: {
+    position: 'relative',
+  },
+  avatarBreathe: {
+    width: 30,
+    height: 30,
+    willChange: 'transform',
+    background: fade(theme.palette.primary.main, 0.2),
+    transform: 'scale(1)',
+    borderRadius: '50%',
+    position: 'absolute',
+    animation: `$breathe ${theme.transitions.easing.easeInOut} 2300ms infinite`,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  '@keyframes breathe': {
+    '0%, 100%': {
+      transform: 'scale(1)',
+    },
+
+    '50%': {
+      transform: 'scale(1.35)',
+    },
+  },
   anchor: {
     overflowAnchor: 'auto',
     height: '1px',
@@ -205,9 +249,25 @@ const Chats = props => {
 
   const { chat } = useChat();
 
-  const { messages, sendMessage } = useMessages({
+  const { messages, sendMessage, typingUsers, showIsTyping } = useMessages({
     chatId,
   });
+
+  function handleTyping(event) {
+    if (!window.isTyping) {
+      showIsTyping(true);
+      window.isTyping = true;
+    }
+
+    if (window.typingTimeout) {
+      cancelDelayCallback(window.typingTimeout);
+    }
+
+    window.typingTimeout = delayCallback(() => {
+      window.isTyping = false;
+      showIsTyping(false);
+    }, 600);
+  }
 
   const { members } = useMembers({ chatId });
 
@@ -276,6 +336,46 @@ const Chats = props => {
           );
         })}
 
+        {console.log({ typingUsers })}
+        <div
+          className={clsx(
+            classes.typingUsers,
+            typingUsers?.length > 0 && classes.typingUsersSlide
+          )}
+        >
+          {typingUsers && typingUsers?.length > 0 && (
+            <>
+              <AvatarGroup max={3}>
+                {typingUsers.map(memberId => {
+                  console.log({ memberId });
+                  console.log({ members });
+
+                  if (!members[memberId]) return <></>;
+
+                  return (
+                    <div className={classes.typingUsersAvatarContainer}>
+                      <div className={classes.avatarBreathe} />
+                      <Avatar
+                        key={memberId}
+                        className={classes.typingUsersAvatar}
+                      >
+                        <Image
+                          sources={members[memberId].avatar.sources}
+                          preview={members[memberId].avatar.preview}
+                          alt=""
+                          width={30}
+                          height={30}
+                        />
+                      </Avatar>
+                    </div>
+                  );
+                })}
+              </AvatarGroup>
+              <Typography variant="body1">is typing ...</Typography>
+            </>
+          )}
+        </div>
+
         <div className={classes.anchor} />
       </div>
 
@@ -286,6 +386,7 @@ const Chats = props => {
           className={classes.textField}
           name="message"
           id="message"
+          onKeyDown={handleTyping}
           inputRef={register}
           InputProps={{
             startAdornment: (

@@ -15,6 +15,8 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
     deleteMessage,
     setDeleteMessage,
   ] = useState(() => (messageId = '') => {});
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [showIsTyping, setShowIsTyping] = useState(() => async isTyping => {});
 
   useEffect(() => {
     (async () => {
@@ -24,6 +26,26 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
       ]);
 
       const userId = getCookie('uid');
+
+      setShowIsTyping(() => async isTyping => {
+        const typingUsersDocRef = firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('typingUsers')
+          .doc(userId);
+
+        isTyping ? typingUsersDocRef.set({}) : typingUsersDocRef.delete();
+      });
+
+      firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('typingUsers')
+        .onSnapshot(collection => {
+          setTypingUsers(
+            collection.docs.map(doc => doc.id).filter(id => id !== userId)
+          );
+        });
 
       setSendMessage(() => ({ text = '', photo }) => {
         if (photo) {
@@ -78,7 +100,14 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
     })();
   }, [chatId]);
 
-  return { messages, sendMessage, deleteMessage, chatId, setChatId };
+  return {
+    messages,
+    sendMessage,
+    deleteMessage,
+    chatId,
+    typingUsers,
+    showIsTyping,
+  };
 };
 
 export default useMessages;
