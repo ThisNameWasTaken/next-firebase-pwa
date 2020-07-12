@@ -13,12 +13,14 @@ const useChat = (chatId = undefined) => {
     (async () => {
       const firestore = await firebase.firestore();
 
-      const chat = (
-        await firestore.collection('chats').doc(chatId).get()
-      ).data();
-
-      chat.id = chatId;
-      setChat(chat);
+      firestore
+        .collection('chats')
+        .doc(chatId)
+        .onSnapshot(doc => {
+          const chat = doc.data();
+          chat.id = chatId;
+          setChat(chat);
+        });
     })();
   }, []);
 
