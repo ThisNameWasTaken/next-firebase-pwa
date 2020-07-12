@@ -27,6 +27,8 @@ import { get as getCookie } from 'js-cookie';
 
 import Image from '../components/Image';
 import BackButton from '../components/BackButton';
+import Skeleton from '@material-ui/lab/Skeleton';
+import clsx from 'clsx';
 
 // Menu
 const Menu = dynamic(() => import('@material-ui/core/Menu'), {
@@ -85,6 +87,16 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: '100%',
   },
+  avatarLoading: {
+    background: 'transparent',
+  },
+  chatBannerAvatarSkeleton: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
   chatBannerText: {
     position: 'absolute',
     left: 0,
@@ -132,6 +144,25 @@ const useStyles = makeStyles(theme => ({
   },
   memberActions: {
     marginRight: theme.spacing(-2),
+  },
+  textSkeleton: {
+    backgroundColor: 'currentColor',
+    width: 260,
+    opacity: 0.54,
+    borderRadius: 8,
+  },
+  textSkeletonChatName: {
+    opacity: 0.89,
+  },
+  textSkeletonMembers: {
+    width: 100,
+    borderRadius: 4,
+  },
+  memberListItemPrimaryTextSkeleton: {
+    background: `rgba(0, 0, 0, .22)`,
+  },
+  memberListItemSecondaryTextSkeleton: {
+    background: `rgba(0, 0, 0, .18)`,
   },
 }));
 
@@ -216,93 +247,165 @@ const ChatInfo = () => {
             </Button>
           </Toolbar>
         </AppBar>
-        {chat ? (
-          <div className={classes.chatBanner}>
-            <div className={classes.chatBannerAvatarContainer}>
-              <Avatar variant="square" className={classes.chatBannerAvatar}>
+
+        <div className={classes.chatBanner}>
+          <div className={classes.chatBannerAvatarContainer}>
+            <Avatar
+              variant="square"
+              className={clsx(
+                classes.chatBannerAvatar,
+                !chat && classes.avatarLoading
+              )}
+            >
+              {chat ? (
                 <Image
                   preview={chat?.avatar?.preview}
                   sources={chat?.avatar?.sources}
                   alt=""
-                  width={'min(100vw, 700px'}
-                  height={'min(100vw, 700px'}
+                  width={'min(100vw, 700px)'}
+                  height={'min(100vw, 700px)'}
                 />
-              </Avatar>
-            </div>
-            <div className={classes.chatBannerText}>
-              <div className={isAdmin && classes.hasEditButton}>
-                <Typography variant="h4" component="h1">
-                  {chat.name}
-                </Typography>
-                {isAdmin && (
-                  <IconButton
-                    className={classes.editChatButton}
-                    color="inherit"
-                    aria-label="edit chat title and avatar"
-                    onClick={openEditDialog}
-                  >
-                    <Edit aria-hidden="true" />
-                  </IconButton>
+              ) : (
+                <Skeleton
+                  animation="wave"
+                  variant="rect"
+                  className={classes.chatBannerAvatarSkeleton}
+                />
+              )}
+            </Avatar>
+          </div>
+          <div className={classes.chatBannerText}>
+            <div className={isAdmin && classes.hasEditButton}>
+              <Typography variant="h4" component="h1">
+                {chat?.name || (
+                  <Skeleton
+                    animation="wave"
+                    variant="text"
+                    className={clsx(
+                      classes.textSkeleton,
+                      classes.textSkeletonChatName
+                    )}
+                  />
                 )}
-              </div>
+              </Typography>
+              {isAdmin && (
+                <IconButton
+                  className={classes.editChatButton}
+                  color="inherit"
+                  aria-label="edit chat title and avatar"
+                  onClick={openEditDialog}
+                >
+                  <Edit aria-hidden="true" />
+                </IconButton>
+              )}
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        </div>
 
         <Typography
           className={classes.membersTitle}
           variant="subtitle1"
           component="h2"
         >
-          {members.length} members
+          {members?.length ? (
+            `${members.length} members`
+          ) : (
+            <Skeleton
+              animation="wave"
+              variant="text"
+              className={clsx(
+                classes.textSkeleton,
+                classes.textSkeletonMembers
+              )}
+            />
+          )}
         </Typography>
+
         <List className={classes.membersList}>
-          {members.map((member, index) => (
-            <React.Fragment key={member.id}>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar>
-                    <Image
-                      preview={member?.avatar?.preview}
-                      sources={member?.avatar?.sources}
-                      alt=""
-                      width={64}
-                      height={64}
+          {!members?.length
+            ? [...new Array(6)].map((chat, chatIndex, chats) => (
+                <React.Fragment key={chatIndex}>
+                  <ListItem alignItems="center" component="a">
+                    <ListItemAvatar>
+                      <Skeleton
+                        animation="wave"
+                        variant="circle"
+                        width={40}
+                        height={40}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Skeleton
+                          className={clsx(
+                            classes.textSkeleton,
+                            classes.memberListItemPrimaryTextSkeleton
+                          )}
+                          animation="wave"
+                          variant="text"
+                          width="33%"
+                        />
+                      }
+                      secondary={
+                        <Skeleton
+                          className={clsx(
+                            classes.textSkeleton,
+                            classes.memberListItemSecondaryTextSkeleton
+                          )}
+                          animation="wave"
+                          variant="text"
+                          width="45%"
+                        />
+                      }
                     />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <>
-                      {member.name}
-                      {member.role === 'admin' && (
+                  </ListItem>
+                  {chatIndex < chats.length - 1 && <Divider />}
+                </React.Fragment>
+              ))
+            : members.map((member, index) => (
+                <React.Fragment key={member.id}>
+                  <ListItem alignItems="flex-start">
+                    <ListItemAvatar>
+                      <Avatar>
+                        <Image
+                          preview={member?.avatar?.preview}
+                          sources={member?.avatar?.sources}
+                          alt=""
+                          width={64}
+                          height={64}
+                        />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
                         <>
-                          {' '}
-                          <span className={classes.adminBadge}>admin</span>
+                          {member.name}
+                          {member.role === 'admin' && (
+                            <>
+                              {' '}
+                              <span className={classes.adminBadge}>admin</span>
+                            </>
+                          )}
                         </>
-                      )}
-                    </>
-                  }
-                  secondary={member.email}
-                />
-                {isAdmin && (
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      className={classes.memberActions}
-                      onClick={event => openMenu(event, member.id)}
-                      aria-controls="edit-member-menu"
-                      aria-haspopup="true"
-                    >
-                      <MoreVert />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                )}
-              </ListItem>
-              {index < members.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
+                      }
+                      secondary={member.email}
+                    />
+                    {isAdmin && (
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          className={classes.memberActions}
+                          onClick={event => openMenu(event, member.id)}
+                          aria-controls="edit-member-menu"
+                          aria-haspopup="true"
+                        >
+                          <MoreVert />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    )}
+                  </ListItem>
+                  {index < members.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
         </List>
       </div>
 
