@@ -7,8 +7,12 @@ import ChatList from '../components/ChatList';
 import UserInfo from '../components/UserInfo/UserInfo';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import SignOutButton from '../components/SignOutButton';
 
 const useStyles = makeStyles(theme => ({
+  actionsDivider: {
+    marginRight: 'auto',
+  },
   searchBar: {
     backgroundColor: theme.palette.background.default,
     color: theme.palette.getContrastText(theme.palette.background.default),
@@ -19,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   fab: {
     position: 'fixed',
     // 56 is bottom navigation's height
-    bottom: 56 + theme.spacing(1),
+    bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
   fabIcon: {
@@ -52,6 +56,8 @@ const Index = () => {
           <List>
             <UserInfo user={currentUser} />
           </List>
+          <div className={classes.actionsDivider} />
+          <SignOutButton />
         </Toolbar>
         <Toolbar variant="dense" className={classes.searchBar}>
           <Search className={classes.searchIcon} />
