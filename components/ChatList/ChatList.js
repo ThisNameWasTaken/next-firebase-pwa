@@ -7,6 +7,7 @@ import {
   Avatar,
   ListItemText,
   Divider,
+  Typography,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 
@@ -24,69 +25,81 @@ const ChatList = () => {
 
   return (
     <List>
-      {!chats
-        ? [...new Array(12)].map((chat, chatIndex, chats) => (
-            <React.Fragment key={chatIndex}>
+      {!chats ? (
+        [...new Array(12)].map((chat, chatIndex, chats) => (
+          <React.Fragment key={chatIndex}>
+            <ListItem
+              alignItems="center"
+              className={classes.chatListItem}
+              component="a"
+            >
+              <ListItemAvatar>
+                <Skeleton
+                  animation="wave"
+                  variant="circle"
+                  width={40}
+                  height={40}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Skeleton
+                    className={classes.textSkeleton}
+                    animation="wave"
+                    variant="text"
+                    width="33%"
+                  />
+                }
+                secondary={
+                  <Skeleton
+                    className={classes.textSkeleton}
+                    animation="wave"
+                    variant="text"
+                    width="45%"
+                  />
+                }
+              />
+            </ListItem>
+            {chatIndex < chats.length - 1 && <Divider />}
+          </React.Fragment>
+        ))
+      ) : chats.length === 0 ? (
+        <div className={classes.noChats}>
+          <Typography
+            className={classes.noChatsText}
+            variant="body1"
+            component="p"
+          >
+            You are not part of any chats yet ¯\_(ツ)_/¯
+          </Typography>
+        </div>
+      ) : (
+        chats.map((chat, chatIndex) => (
+          <React.Fragment key={chat.id}>
+            <Link href={`/chat?chatId=${chat.id}`} passHref>
               <ListItem
                 alignItems="center"
                 className={classes.chatListItem}
                 component="a"
               >
                 <ListItemAvatar>
-                  <Skeleton
-                    animation="wave"
-                    variant="circle"
-                    width={40}
-                    height={40}
-                  />
+                  <Avatar>
+                    <Image
+                      sources={chat.avatar.sources}
+                      preview={chat.avatar.preview}
+                      alt=""
+                      width={64}
+                      height={64}
+                    />
+                  </Avatar>
                 </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Skeleton
-                      className={classes.textSkeleton}
-                      animation="wave"
-                      variant="text"
-                      width="33%"
-                    />
-                  }
-                  secondary={
-                    <Skeleton
-                      className={classes.textSkeleton}
-                      animation="wave"
-                      variant="text"
-                      width="45%"
-                    />
-                  }
-                />
+                <ListItemText primary={chat.name} />
               </ListItem>
-              {chatIndex < chats.length - 1 && <Divider />}
-            </React.Fragment>
-          ))
-        : chats.map((chat, chatIndex) => (
-            <React.Fragment key={chat.id}>
-              <Link href={`/chat?chatId=${chat.id}`} passHref>
-                <ListItem
-                  alignItems="center"
-                  className={classes.chatListItem}
-                  component="a"
-                >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <Image
-                        sources={chat.avatar.sources}
-                        preview={chat.avatar.preview}
-                        alt=""
-                        width={64}
-                        height={64}
-                      />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={chat.name} />
-                </ListItem>
-              </Link>
-              {chatIndex < chats.length - 1 && <Divider />}
-            </React.Fragment>
-          ))}
+            </Link>
+            {chatIndex < chats.length - 1 && <Divider />}
+          </React.Fragment>
+        ))
+      )}
     </List>
   );
 };

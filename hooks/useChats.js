@@ -38,6 +38,11 @@ const useChats = () => {
         .collection('chats')
         .onSnapshot(async collection => {
           const chats = [];
+
+          if (collection.docs.length === 0) {
+            setChats(chats);
+          }
+
           collection.docs.forEach(doc => {
             firestore
               .collection('chats')
