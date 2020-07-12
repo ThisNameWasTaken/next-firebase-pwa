@@ -78,7 +78,7 @@ const EditChatDialog = ({
           <TextField
             className={classes.titleTextField}
             variant="outlined"
-            label="Group name"
+            label="Chat name"
             name="title"
             type="text"
             id="group-title"

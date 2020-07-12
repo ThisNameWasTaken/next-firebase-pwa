@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useFirebase } from './useFirebase';
 import { get as getCookie } from 'js-cookie';
+import { useRouter } from 'next/router';
 
 const useMembers = ({ chatId }) => {
+  const router = useRouter();
+
   const firebase = useFirebase();
   const [members, setMembers] = useState({});
   const [leaveChat, setLeaveChat] = useState(() => () => {});
@@ -58,12 +61,14 @@ const useMembers = ({ chatId }) => {
 
       setLeaveChat(() => async () => {
         try {
-          return await firestore
+          await firestore
             .collection('chats')
             .doc(chatId)
             .collection('members')
             .doc(userId)
             .delete();
+
+          router.push('/');
         } catch (err) {
           console.error(err);
         }

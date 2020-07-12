@@ -83,17 +83,29 @@ const ChatList = () => {
                 component="a"
               >
                 <ListItemAvatar>
-                  <Avatar>
-                    <Image
-                      sources={chat.avatar.sources}
-                      preview={chat.avatar.preview}
-                      alt=""
-                      width={64}
-                      height={64}
+                  {chat?.avatar?.preview ? (
+                    <Avatar>
+                      <Image
+                        sources={chat.avatar.sources}
+                        preview={chat.avatar.preview}
+                        alt=""
+                        width={40}
+                        height={40}
+                      />
+                    </Avatar>
+                  ) : (
+                    <Skeleton
+                      animation="wave"
+                      variant="circle"
+                      width={40}
+                      height={40}
                     />
-                  </Avatar>
+                  )}
                 </ListItemAvatar>
-                <ListItemText primary={chat.name} />
+                <ListItemText
+                  primary={chat.name}
+                  secondary={`${chat.lastMessage.text}`}
+                />
               </ListItem>
             </Link>
             {chatIndex < chats.length - 1 && <Divider />}

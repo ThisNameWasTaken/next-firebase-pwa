@@ -140,13 +140,9 @@ const ChatInfo = () => {
 
   const { chat } = useChat();
 
-  const {
-    members: _members,
-    leaveChat,
-    addMember,
-    addAdmin,
-    removeMember,
-  } = useMembers({ chatId });
+  const { members: _members, leaveChat, addAdmin, removeMember } = useMembers({
+    chatId,
+  });
 
   const classes = useStyles();
 
@@ -216,7 +212,7 @@ const ChatInfo = () => {
               endIcon={<ExitToApp aria-hidden="true" />}
               onClick={leaveChat}
             >
-              <span className={classes.leaveGroupButtonLabel}>Leave group</span>
+              <span className={classes.leaveGroupButtonLabel}>Leave chat</span>
             </Button>
           </Toolbar>
         </AppBar>
