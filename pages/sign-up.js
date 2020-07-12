@@ -23,6 +23,7 @@ import { Slides, Slide } from '../components/slides';
 import { useFirebase } from '../hooks/useFirebase';
 import AvatarEdit from '../components/AvatarEdit';
 import RegisterInfo from '../components/RegisterInfo/RegisterInfo';
+import BackButton from '../components/BackButton';
 
 const Connector = withStyles(theme => ({
   alternativeLabel: {
@@ -112,6 +113,12 @@ function StepIcon(props) {
 }
 
 const useStyles = makeStyles(theme => ({
+  nav: {
+    padding: theme.spacing(0, 1),
+    position: 'fixed',
+    top: 0,
+    left: 0,
+  },
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -323,187 +330,193 @@ export default function SignUp() {
   }, [prevActiveStep]);
 
   return (
-    <main>
-      <div className={classes.root}>
-        <div className={classes.card}>
-          <Stepper
-            className={classes.stepper}
-            activeStep={activeStep}
-            connector={<Connector />}
-            alternativeLabel
-          >
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel StepIconComponent={StepIcon}>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+    <>
+      <nav className={classes.nav}>
+        <BackButton />
+      </nav>
 
-          <Slides>
-            <Slide
-              index={0}
+      <main>
+        <div className={classes.root}>
+          <div className={classes.card}>
+            <Stepper
+              className={classes.stepper}
               activeStep={activeStep}
-              prevActiveStep={prevActiveStep}
+              connector={<Connector />}
+              alternativeLabel
             >
-              <div className={classes.cardContent}>
-                <form
-                  onSubmit={credentialsForm.handleSubmit(onSubmitCredentials)}
-                  ref={submitCredentialsFormRef}
-                >
-                  <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
+              {steps.map(label => (
+                <Step key={label}>
+                  <StepLabel StepIconComponent={StepIcon}>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+
+            <Slides>
+              <Slide
+                index={0}
+                activeStep={activeStep}
+                prevActiveStep={prevActiveStep}
+              >
+                <div className={classes.cardContent}>
+                  <form
+                    onSubmit={credentialsForm.handleSubmit(onSubmitCredentials)}
+                    ref={submitCredentialsFormRef}
                   >
-                    <Grid item>
-                      <TextField
-                        className={classes.textField}
-                        variant="outlined"
-                        label="Email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        error={credentialsForm.errors.email}
-                        helperText={credentialsForm.errors?.email?.message}
-                        inputRef={credentialsForm.register({
-                          required: 'Email is required',
-                        })}
-                      />
+                    <Grid
+                      container
+                      direction="column"
+                      justify="center"
+                      alignItems="center"
+                    >
+                      <Grid item>
+                        <TextField
+                          className={classes.textField}
+                          variant="outlined"
+                          label="Email"
+                          name="email"
+                          type="email"
+                          autoComplete="email"
+                          error={credentialsForm.errors.email}
+                          helperText={credentialsForm.errors?.email?.message}
+                          inputRef={credentialsForm.register({
+                            required: 'Email is required',
+                          })}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <TextField
+                          className={classes.textField}
+                          variant="outlined"
+                          label="Password"
+                          name="password"
+                          autoComplete="new-password"
+                          type={isPasswordVisible ? 'text' : 'password'}
+                          error={credentialsForm.errors.password}
+                          helperText={credentialsForm.errors?.password?.message}
+                          inputRef={credentialsForm.register({
+                            required: 'Password is required',
+                          })}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Tooltip title="Show password">
+                                  <IconButton
+                                    aria-label="Show password"
+                                    aria-pressed={isPasswordVisible}
+                                    onClick={onTogglePasswordVisibility}
+                                  >
+                                    {isPasswordVisible ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
+                                  </IconButton>
+                                </Tooltip>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item>
-                      <TextField
-                        className={classes.textField}
-                        variant="outlined"
-                        label="Password"
-                        name="password"
-                        autoComplete="new-password"
-                        type={isPasswordVisible ? 'text' : 'password'}
-                        error={credentialsForm.errors.password}
-                        helperText={credentialsForm.errors?.password?.message}
-                        inputRef={credentialsForm.register({
-                          required: 'Password is required',
-                        })}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title="Show password">
-                                <IconButton
-                                  aria-label="Show password"
-                                  aria-pressed={isPasswordVisible}
-                                  onClick={onTogglePasswordVisibility}
-                                >
-                                  {isPasswordVisible ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </Tooltip>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </form>
-              </div>
-            </Slide>
+                  </form>
+                </div>
+              </Slide>
 
-            <Slide
-              index={1}
-              activeStep={activeStep}
-              prevActiveStep={prevActiveStep}
-            >
-              <div className={classes.cardContent}>
-                <form
-                  onSubmit={nameForm.handleSubmit(onSubmitName)}
-                  ref={submitNameFormRef}
-                >
-                  <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
+              <Slide
+                index={1}
+                activeStep={activeStep}
+                prevActiveStep={prevActiveStep}
+              >
+                <div className={classes.cardContent}>
+                  <form
+                    onSubmit={nameForm.handleSubmit(onSubmitName)}
+                    ref={submitNameFormRef}
                   >
-                    <Grid item>
-                      <TextField
-                        className={classes.textField}
-                        variant="outlined"
-                        label="Name"
-                        name="name"
-                        type="name"
-                        autoComplete="name"
-                        error={nameForm.errors.name}
-                        helperText={nameForm.errors?.name?.message}
-                        inputRef={nameForm.register({
-                          required: 'Name is required',
-                        })}
-                      />
+                    <Grid
+                      container
+                      direction="column"
+                      justify="center"
+                      alignItems="center"
+                    >
+                      <Grid item>
+                        <TextField
+                          className={classes.textField}
+                          variant="outlined"
+                          label="Name"
+                          name="name"
+                          type="name"
+                          autoComplete="name"
+                          error={nameForm.errors.name}
+                          helperText={nameForm.errors?.name?.message}
+                          inputRef={nameForm.register({
+                            required: 'Name is required',
+                          })}
+                        />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </form>
-              </div>
-            </Slide>
+                  </form>
+                </div>
+              </Slide>
 
-            <Slide
-              index={2}
-              activeStep={activeStep}
-              prevActiveStep={prevActiveStep}
-            >
-              <div className={classes.cardContent}>
-                <form
-                  onSubmit={avatarForm.handleSubmit(onSubmitAvatar)}
-                  ref={submitAvatarFormRef}
-                >
-                  <div className={classes.avatarEditContainer}>
-                    <AvatarEdit
-                      className={classes.avatarEdit}
-                      register={avatarForm.register}
-                    />
-                  </div>
-                </form>
-              </div>
-            </Slide>
+              <Slide
+                index={2}
+                activeStep={activeStep}
+                prevActiveStep={prevActiveStep}
+              >
+                <div className={classes.cardContent}>
+                  <form
+                    onSubmit={avatarForm.handleSubmit(onSubmitAvatar)}
+                    ref={submitAvatarFormRef}
+                  >
+                    <div className={classes.avatarEditContainer}>
+                      <AvatarEdit
+                        className={classes.avatarEdit}
+                        register={avatarForm.register}
+                      />
+                    </div>
+                  </form>
+                </div>
+              </Slide>
 
-            <Slide
-              index={3}
-              activeStep={activeStep}
-              prevActiveStep={prevActiveStep}
-            >
-              <div className={classes.cardContent}>
-                <RegisterInfo
-                  avatar={formData.avatar[0]}
-                  name={formData.name}
-                  email={formData.email}
-                />
-              </div>
-            </Slide>
-          </Slides>
+              <Slide
+                index={3}
+                activeStep={activeStep}
+                prevActiveStep={prevActiveStep}
+              >
+                <div className={classes.cardContent}>
+                  <RegisterInfo
+                    avatar={formData.avatar[0]}
+                    name={formData.name}
+                    email={formData.email}
+                  />
+                </div>
+              </Slide>
+            </Slides>
 
-          <div style={activeStep > steps.length && { visibility: 'hidden' }}>
-            <Button
-              color="primary"
-              variant="text"
-              disabled={activeStep === 0}
-              onClick={onPrevStep}
-            >
-              back
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={activeStep === steps.length ? onRegister : onNextStep}
-            >
-              {activeStep < steps.length - 1
-                ? 'next'
-                : activeStep === steps.length - 1
-                ? 'done'
-                : 'confirm'}
-            </Button>
+            <div style={activeStep > steps.length && { visibility: 'hidden' }}>
+              <Button
+                color="primary"
+                variant="text"
+                disabled={activeStep === 0}
+                onClick={onPrevStep}
+              >
+                back
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={activeStep === steps.length ? onRegister : onNextStep}
+              >
+                {activeStep < steps.length - 1
+                  ? 'next'
+                  : activeStep === steps.length - 1
+                  ? 'done'
+                  : 'confirm'}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
