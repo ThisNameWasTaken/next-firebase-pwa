@@ -57,15 +57,47 @@ const Image = ({
   height,
   ...otherProps
 }) => {
+  const minWidth = Math.min(
+    ...Object.keys(sources).map(size => parseInt(size) || 0)
+  );
+
+  function getSizeLimit(width) {
+    if (typeof width === 'number') return width < minWidth ? minWidth : width;
+
+    if (width.startsWith('max')) {
+      return Infinity;
+    }
+
+    if (width.startsWith('min')) {
+      const matches = width.match(/(\d+)px/);
+
+      if (matches && matches[1]) {
+        const width = parseFloat(matches[1]);
+
+        return width < minWidth ? minWidth : width;
+      }
+
+      return Infinity;
+    }
+  }
+
+  const sizeLimit = getSizeLimit(width);
+
+  console.log({ sizeLimit });
+
   const maxSize =
     sources &&
-    Math.max(...Object.keys(sources).map(size => parseInt(size) || 0));
+    Math.max(
+      ...Object.keys(sources)
+        .map(size => parseInt(size) || 0)
+        .filter(size => size <= sizeLimit)
+    );
 
   const sizes =
     sources &&
-    Object.keys(sources).sort(
-      (a, b) => (parseInt(a) || 0) - (parseInt(b) || 0)
-    );
+    Object.keys(sources)
+      .sort((a, b) => (parseInt(b) || 0) - (parseInt(a) || 0))
+      .filter(size => parseFloat(size) <= sizeLimit);
 
   const classes = useStyles();
 
