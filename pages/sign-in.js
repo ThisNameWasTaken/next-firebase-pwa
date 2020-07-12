@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    // FIXME: Fix vh on mobile
-    height: '100vh',
+
+    height: 'calc(var(--vh, 1vh) * 100)',
   },
   textField: {
     width: '100%',
