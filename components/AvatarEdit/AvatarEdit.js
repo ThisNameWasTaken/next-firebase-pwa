@@ -39,16 +39,26 @@ const useStyles = makeStyles(theme => ({
     zIndex: 0,
     color: 'rgba(0, 0, 0, .55)',
   },
+  imageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 1,
+
+    '& > div': {
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+    },
+  },
   image: {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    objectFit: 'cover',
+    display: 'block',
     width: '100%',
-    minWidth: '100%',
-    minHeight: '100%',
-    height: 'auto',
-    zIndex: 1,
+    height: '100%',
   },
   helperText: {
     textAlign: 'center',
@@ -99,7 +109,11 @@ const AvatarEdit = ({
           htmlFor="avatar-input"
         ></CardActionArea>
         <Photo className={classes.icon} />
-        <img className={classes.image} src={src} />
+        <div className={classes.imageContainer}>
+          <div>
+            <img className={classes.image} src={src} />
+          </div>
+        </div>
         <input
           id="avatar-input"
           accept="image/*"
