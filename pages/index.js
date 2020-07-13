@@ -8,6 +8,7 @@ import UserInfo from '../components/UserInfo/UserInfo';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import SignOutButton from '../components/SignOutButton';
+import EditUserButton from '../components/EditUserButton';
 
 const useStyles = makeStyles(theme => ({
   actionsDivider: {
@@ -57,6 +58,7 @@ const Index = () => {
             <UserInfo user={currentUser} />
           </List>
           <div className={classes.actionsDivider} />
+          <EditUserButton />
           <SignOutButton />
         </Toolbar>
         <Toolbar variant="dense" className={classes.searchBar}>
