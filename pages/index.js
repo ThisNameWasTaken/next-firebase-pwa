@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import SignOutButton from '../components/SignOutButton';
 import EditUserButton from '../components/EditUserButton';
+import useChats from '../hooks/useChats';
 
 const useStyles = makeStyles(theme => ({
   actionsDivider: {
@@ -20,6 +21,11 @@ const useStyles = makeStyles(theme => ({
   },
   searchIcon: {
     marginRight: theme.spacing(1),
+  },
+  searchInput: {
+    border: 0,
+    outline: 0,
+    fontSize: '1rem',
   },
   fab: {
     position: 'fixed',
@@ -42,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 const Index = () => {
   const classes = useStyles();
   const currentUser = useCurrentUser();
+  const { chats, filterChats } = useChats();
 
   useEffect(() => {
     const testWorker = new Worker('./test.worker.js');
@@ -63,10 +70,19 @@ const Index = () => {
         </Toolbar>
         <Toolbar variant="dense" className={classes.searchBar}>
           <Search className={classes.searchIcon} />
-          Search ...
+          <input
+            placeholder="search chat ..."
+            aria-label="search chat"
+            type="text"
+            className={classes.searchInput}
+            onChange={event => {
+              console.log(event.target.value);
+              filterChats(event.target.value);
+            }}
+          />
         </Toolbar>
       </AppBar>
-      <ChatList />
+      <ChatList chats={chats} />
       <Link href="/create-chat" passHref>
         <Fab
           variant="extended"

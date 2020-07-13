@@ -18,6 +18,23 @@ const useChats = () => {
       members = [{ id: '', role: '' }],
     }) => {}
   );
+  const [filter, setFilter] = useState(null);
+  const [filteredChats, setFilteredChats] = useState(chats);
+
+  useEffect(() => {
+    if (filter) {
+      setFilteredChats(
+        chats?.filter(chat => {
+          const isMatchingName = chat.name.includes(filter);
+          const isMatchingLastMessage = chat.lastMessage.text.includes(filter);
+
+          return isMatchingName || isMatchingLastMessage;
+        })
+      );
+    } else {
+      setFilteredChats(chats);
+    }
+  }, [chats, filter]);
 
   useEffect(() => {
     (async () => {
@@ -96,7 +113,7 @@ const useChats = () => {
     })();
   }, []);
 
-  return { chats, createChat };
+  return { chats: filteredChats, createChat, filterChats: setFilter };
 };
 
 export default useChats;

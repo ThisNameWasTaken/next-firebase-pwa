@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   List,
@@ -12,19 +12,13 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 
 import Image from '../Image';
-import useChats from '../../hooks/useChats';
 import { useStyles } from './styles';
 
-const ChatList = () => {
+const ChatList = ({ chats, ...otherProps }) => {
   const classes = useStyles();
-  const { chats } = useChats();
-
-  useEffect(() => {
-    console.log({ chats });
-  }, [chats]);
 
   return (
-    <List>
+    <List {...otherProps}>
       {!chats ? (
         [...new Array(12)].map((chat, chatIndex, chats) => (
           <React.Fragment key={chatIndex}>
