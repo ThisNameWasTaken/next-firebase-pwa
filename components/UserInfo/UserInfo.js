@@ -21,7 +21,7 @@ const UserInfo = ({ user }) => {
             <Image
               sources={user?.avatar?.sources}
               preview={user?.avatar?.preview}
-              alt=""
+              alt={user?.alt}
               width={40}
               height={40}
             />

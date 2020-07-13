@@ -80,6 +80,7 @@ const ChatList = () => {
               <ListItem
                 alignItems="center"
                 className={classes.chatListItem}
+                button
                 component="a"
               >
                 <ListItemAvatar>
@@ -88,7 +89,7 @@ const ChatList = () => {
                       <Image
                         sources={chat.avatar.sources}
                         preview={chat.avatar.preview}
-                        alt=""
+                        alt={chat?.alt}
                         width={40}
                         height={40}
                       />

@@ -190,6 +190,7 @@ export default function SignUp() {
     password: '',
     name: '',
     avatar: '',
+    alt: '',
   });
 
   const credentialsForm = useForm();
@@ -265,8 +266,6 @@ export default function SignUp() {
       formData.password
     );
 
-    console.log({ user });
-
     if (formData.avatar && formData.avatar[0]) {
       const storageRef = await storage.ref();
 
@@ -277,7 +276,7 @@ export default function SignUp() {
       await firestore
         .collection('users')
         .doc(user.uid)
-        .set({ name: formData.name, email: formData.email });
+        .set({ name: formData.name, email: formData.email, alt: formData.alt });
     }
 
     Router.push('/');
@@ -313,6 +312,7 @@ export default function SignUp() {
       nameForm.setValue('name', formData.name);
     } else if (activeStep === 2) {
       avatarForm.setValue('avatar', formData.avatar);
+      avatarForm.setValue('alt', formData.alt);
     }
   }, [activeStep]);
 
@@ -324,8 +324,8 @@ export default function SignUp() {
       const { name } = nameForm.getValues();
       setFormData(formData => ({ ...formData, name }));
     } else if (prevActiveStep === 2) {
-      const { avatar } = avatarForm.getValues();
-      setFormData(formData => ({ ...formData, avatar }));
+      const { avatar, alt } = avatarForm.getValues();
+      setFormData(formData => ({ ...formData, avatar, alt }));
     }
   }, [prevActiveStep]);
 

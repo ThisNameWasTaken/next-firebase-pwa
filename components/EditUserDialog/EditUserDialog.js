@@ -38,7 +38,7 @@ const EditUserDialog = ({
     onReject(event);
   }
 
-  async function updateChat({ avatar }) {
+  async function updateChat({ avatar, alt }) {
     try {
       const [firestore, storage] = await Promise.all([
         firebase.firestore(),
@@ -47,6 +47,7 @@ const EditUserDialog = ({
 
       firestore.collection('users').doc(userId).update({
         name,
+        alt,
       });
 
       if (avatar && avatar[0]) {

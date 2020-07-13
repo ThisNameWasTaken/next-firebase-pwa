@@ -1,13 +1,16 @@
-import React, { useState, useEffect, forwardRef, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   makeStyles,
   Card,
   CardActionArea,
-  Typography,
   FormHelperText,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import { Photo } from '@material-ui/icons';
+
+import * as tf from '@tensorflow/tfjs';
+import * as mobilenet from '@tensorflow-models/mobilenet';
+
 import getSrcFromImageFile from '../../utils/getSrcFromImageFile';
 
 const useStyles = makeStyles(theme => ({
@@ -74,13 +77,24 @@ const AvatarEdit = ({
 }) => {
   const classes = useStyles();
   const [src, setSrc] = useState(_src);
+  const [alt, setAlt] = useState();
 
   const inputRef = useRef(null);
+  const imageRef = useRef(null);
 
   async function updateImagePreview() {
     try {
       const src = await getSrcFromImageFile(inputRef.current?.files[0]);
       setSrc(src);
+
+      const model = await mobilenet.load({
+        version: 2,
+        alpha: 1,
+      });
+      const predictions = await model.classify(imageRef.current);
+
+      setAlt(predictions[0].className);
+      console.log('');
     } catch (err) {
       requestAnimationFrame(updateImagePreview);
     }
@@ -111,7 +125,7 @@ const AvatarEdit = ({
         <Photo className={classes.icon} />
         <div className={classes.imageContainer}>
           <div>
-            <img className={classes.image} src={src} />
+            <img ref={imageRef} className={classes.image} src={src} alt={alt} />
           </div>
         </div>
         <input
@@ -122,6 +136,16 @@ const AvatarEdit = ({
           hidden
           ref={ref => {
             inputRef.current = ref;
+            register(ref);
+          }}
+        />
+        <input
+          id="avatar-alt"
+          type="text"
+          name="alt"
+          hidden
+          value={alt}
+          ref={ref => {
             register(ref);
           }}
         />

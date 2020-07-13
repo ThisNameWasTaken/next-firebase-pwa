@@ -25,7 +25,7 @@ const UserCheckList = ({ users, checked, onCheck, ...otherProps }) => {
                     <Image
                       preview={user.avatar?.preview}
                       sources={user.avatar?.sources}
-                      alt=""
+                      alt={user?.alt}
                       width={40}
                       height={40}
                     />

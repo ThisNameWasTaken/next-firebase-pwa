@@ -82,7 +82,7 @@ const CreateChat = () => {
     setChecked(newChecked);
   };
 
-  async function createGroup({ title, avatar }) {
+  async function createGroup({ title, avatar, alt }) {
     console.log({ title, avatar, checked });
 
     const userId = getCookie('uid');
@@ -97,6 +97,7 @@ const CreateChat = () => {
 
     const newChatDoc = await firestore.collection('chats').add({
       name: title,
+      alt,
     });
 
     if (avatar && avatar[0]) {

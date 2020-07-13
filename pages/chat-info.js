@@ -267,7 +267,7 @@ const ChatInfo = () => {
                 <Image
                   preview={chat?.avatar?.preview}
                   sources={chat?.avatar?.sources}
-                  alt=""
+                  alt={chat?.alt}
                   width={'min(100vw, 700px)'}
                   height={'min(100vw, 700px)'}
                 />
@@ -376,7 +376,7 @@ const ChatInfo = () => {
                         <Image
                           preview={member?.avatar?.preview}
                           sources={member?.avatar?.sources}
-                          alt=""
+                          alt={member?.alt}
                           width={64}
                           height={64}
                         />

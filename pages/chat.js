@@ -141,7 +141,7 @@ const ChatBubble = ({
               <Image
                 sources={avatar.sources}
                 preview={avatar.preview}
-                alt=""
+                alt={avatar?.alt}
                 width={64}
                 height={64}
               />
@@ -362,7 +362,7 @@ const Chats = props => {
                         <Image
                           sources={members[memberId].avatar.sources}
                           preview={members[memberId].avatar.preview}
-                          alt=""
+                          alt={members[memberId]?.alt}
                           width={30}
                           height={30}
                         />

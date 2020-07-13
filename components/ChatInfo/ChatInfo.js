@@ -22,7 +22,7 @@ const ChatInfo = ({ chat }) => {
             <Image
               sources={chat?.avatar?.sources}
               preview={chat?.avatar?.preview}
-              alt=""
+              alt={chat?.alt}
               width={40}
               height={40}
             />

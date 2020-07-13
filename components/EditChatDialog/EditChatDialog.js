@@ -39,7 +39,7 @@ const EditChatDialog = ({
     onReject(event);
   }
 
-  async function updateChat({ avatar }) {
+  async function updateChat({ avatar, alt }) {
     try {
       const chatId = getQueryParams().chatId;
 
@@ -50,6 +50,7 @@ const EditChatDialog = ({
 
       firestore.collection('chats').doc(chatId).update({
         name,
+        alt,
       });
 
       if (avatar && avatar[0]) {

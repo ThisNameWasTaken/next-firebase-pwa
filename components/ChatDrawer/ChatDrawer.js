@@ -82,7 +82,7 @@ const ChatDrawer = ({
                 <Image
                   preview={chat?.avatar?.preview}
                   sources={chat?.avatar?.sources}
-                  alt=""
+                  alt={chat?.alt}
                   width={200}
                   height={200}
                 />
@@ -114,7 +114,7 @@ const ChatDrawer = ({
                     <Image
                       preview={member?.avatar?.preview}
                       sources={member?.avatar?.sources}
-                      alt=""
+                      alt={member?.alt}
                       width={64}
                       height={64}
                     />
