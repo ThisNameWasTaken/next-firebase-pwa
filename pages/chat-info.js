@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import head from 'next/head';
 
 import useMembers from '../hooks/useMembers';
 import useChat from '../hooks/useChat';
@@ -29,6 +30,7 @@ import Image from '../components/Image';
 import BackButton from '../components/BackButton';
 import Skeleton from '@material-ui/lab/Skeleton';
 import clsx from 'clsx';
+import Head from 'next/head';
 
 // Menu
 const Menu = dynamic(() => import('@material-ui/core/Menu'), {
@@ -232,6 +234,10 @@ const ChatInfo = () => {
 
   return (
     <>
+      <Head>
+        <link rel="prefetch" href={chat?.avatar?.sources[720].initial} />
+      </Head>
+
       <div className={classes.content}>
         <AppBar position="fixed">
           <Toolbar className={classes.toolBar}>
