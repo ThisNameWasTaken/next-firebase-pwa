@@ -8,6 +8,9 @@ const runtimeCaching = [
         maxEntries: 2,
         maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
       },
+      cacheableResponse: {
+        statuses: [200, 300],
+      },
     },
   },
   {
@@ -18,6 +21,9 @@ const runtimeCaching = [
       expiration: {
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
+      },
+      cacheableResponse: {
+        statuses: [200, 300],
       },
     },
   },
@@ -30,6 +36,9 @@ const runtimeCaching = [
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
       },
+      cacheableResponse: {
+        statuses: [200, 300],
+      },
     },
   },
   {
@@ -40,6 +49,9 @@ const runtimeCaching = [
       expiration: {
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
+      },
+      cacheableResponse: {
+        statuses: [200, 300],
       },
     },
   },
@@ -52,6 +64,28 @@ const runtimeCaching = [
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
       },
+      cacheableResponse: {
+        statuses: [200, 300],
+      },
+    },
+  },
+  {
+    urlPattern: /googleapis\.com\/identitytoolkit\//i,
+    handler: 'NetworkFirst',
+    options: {
+      cacheName: 'others',
+      expiration: {
+        maxEntries: 32,
+        maxAgeSeconds: 24 * 60 * 60, // 24 hours
+      },
+      cacheableResponse: {
+        statuses: [200, 300],
+      },
+      networkTimeoutSeconds: 10,
+      backgroundSync: {
+        name: 'retry registration',
+        options: { maxRetentionTime: 360 },
+      },
     },
   },
   {
@@ -62,6 +96,9 @@ const runtimeCaching = [
       expiration: {
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
+      },
+      cacheableResponse: {
+        statuses: [200, 300],
       },
     },
   },
