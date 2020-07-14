@@ -12,7 +12,12 @@ import {
   IconButton,
   fade,
 } from '@material-ui/core';
-import { Send, EmojiEmotionsOutlined, InfoOutlined } from '@material-ui/icons';
+import {
+  Send,
+  EmojiEmotionsOutlined,
+  InfoOutlined,
+  AddPhotoAlternate,
+} from '@material-ui/icons';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import { get as getCookie } from 'js-cookie';
 import Link from 'next/link';
@@ -112,6 +117,8 @@ const ChatBubble = ({
 }) => {
   const classes = useChatBubbleStyles();
 
+  console.log({ photo });
+
   return (
     <>
       {isInfo ? (
@@ -158,6 +165,23 @@ const ChatBubble = ({
                 (isSelf ? classes.mergeNextRight : classes.mergeNextLeft)
             )}
           >
+            {photo && (
+              <div
+                style={{
+                  width: '100%',
+                  paddingTop: `${(photo.width / photo.height) * 100}%`,
+                }}
+              >
+                <Image
+                  style={{ minWidth: 120, display: 'block' }}
+                  sources={photo?.sources}
+                  alt={photo?.alt}
+                  preview={photo?.preview}
+                  width={photo?.width}
+                  height={photo?.height}
+                />
+              </div>
+            )}
             <Typography variant="body1" className={classes.text}>
               {text}
             </Typography>
@@ -272,20 +296,12 @@ const Chats = props => {
 
   const { members } = useMembers({ chatId });
 
-  function onSubmit({ message }) {
-    sendMessage({ text: message });
+  function onSubmit({ message, photo }) {
+    console.log({ message, photo: photo[0] });
+    sendMessage({ text: message, photo: photo[0] });
     setValue('message', '');
+    setValue('photo', undefined);
   }
-
-  console.log({ props });
-
-  useEffect(() => {
-    console.log({ members });
-  }, [members]);
-
-  useEffect(() => {
-    console.log({ messages });
-  }, [messages]);
 
   useEffect(() => {
     if (!window.didScrollToBottom) {
@@ -334,6 +350,7 @@ const Chats = props => {
             <ChatBubble
               key={message.id}
               text={message.text}
+              photo={message.photo}
               avatar={members[message.authorId]?.avatar}
               isSelf={message.authorId === userId}
               mergePrevBubble={message.authorId === prevAuthorId}
@@ -344,7 +361,6 @@ const Chats = props => {
           );
         })}
 
-        {console.log({ typingUsers })}
         <div
           className={clsx(
             classes.typingUsers,
@@ -355,9 +371,6 @@ const Chats = props => {
             <>
               <AvatarGroup max={3}>
                 {typingUsers.map(memberId => {
-                  console.log({ memberId });
-                  console.log({ members });
-
                   if (!members[memberId]) return <></>;
 
                   return (
@@ -400,11 +413,19 @@ const Chats = props => {
             'aria-label': 'type message',
             startAdornment: (
               <InputAdornment position="start">
-                <IconButton aria-label="send image" type="submit">
-                  <EmojiEmotionsOutlined
-                    aria-hidden="true"
-                    style={{ opacity: 0.87 }}
+                <IconButton
+                  aria-label="upload image"
+                  role="button"
+                  component="label"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    name="photo"
+                    ref={register}
+                    hidden
                   />
+                  <AddPhotoAlternate aria-hidden="true" />
                 </IconButton>
               </InputAdornment>
             ),

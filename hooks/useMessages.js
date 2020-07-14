@@ -48,13 +48,6 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
         });
 
       setSendMessage(() => ({ text = '', photo }) => {
-        if (photo) {
-          storage
-            .ref()
-            .child(`photos/chats/${userId}/${photo.name}`)
-            .put(photo);
-        }
-
         return firestore
           .collection('chats')
           .doc(chatId)
@@ -63,6 +56,16 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
             text,
             authorId: userId,
             createdAt: Date.now(),
+          })
+          .then(doc => {
+            if (photo) {
+              storage
+                .ref()
+                .child(
+                  `photos/chats/${chatId}/messages/${doc.id}/${photo.name}`
+                )
+                .put(photo);
+            }
           });
       });
 
