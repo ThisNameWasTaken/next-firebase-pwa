@@ -14,7 +14,7 @@ const runtimeCaching = [
     },
   },
   {
-    urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
+    urlPattern: /firebasestorage\./i,
     handler: 'StaleWhileRevalidate',
     options: {
       cacheName: 'static-image-assets',
@@ -22,8 +22,16 @@ const runtimeCaching = [
         maxEntries: 32,
         maxAgeSeconds: 24 * 60 * 60, // 24 hours
       },
-      cacheableResponse: {
-        statuses: [200, 300],
+    },
+  },
+  {
+    urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)/i,
+    handler: 'StaleWhileRevalidate',
+    options: {
+      cacheName: 'static-image-assets',
+      expiration: {
+        maxEntries: 32,
+        maxAgeSeconds: 24 * 60 * 60, // 24 hours
       },
     },
   },
