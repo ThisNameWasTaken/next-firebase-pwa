@@ -372,6 +372,7 @@ export default function SignUp() {
                         <TextField
                           className={classes.textField}
                           variant="outlined"
+                          id="email"
                           label="Email"
                           name="email"
                           type="email"
@@ -387,6 +388,7 @@ export default function SignUp() {
                         <TextField
                           className={classes.textField}
                           variant="outlined"
+                          id="password"
                           label="Password"
                           name="password"
                           autoComplete="new-password"
@@ -442,6 +444,7 @@ export default function SignUp() {
                         <TextField
                           className={classes.textField}
                           variant="outlined"
+                          id="name"
                           label="Name"
                           name="name"
                           type="name"

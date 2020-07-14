@@ -178,6 +178,7 @@ export default function SignIn() {
               <TextField
                 className={classes.textField}
                 variant="outlined"
+                id="email"
                 label="Email"
                 name="email"
                 type="email"
@@ -191,6 +192,7 @@ export default function SignIn() {
               <TextField
                 className={classes.textField}
                 variant="outlined"
+                id="password"
                 label="Password"
                 name="password"
                 autoComplete="current-password"
