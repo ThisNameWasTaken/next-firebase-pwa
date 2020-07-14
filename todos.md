@@ -24,12 +24,16 @@
 
 - [x] add edit profile
 - [x] tensorflow image labeling / captioning worker
-- [] add chat filter
+- [x] add chat filter
+
+- [] default to passive events
+- [] fix a11y issues
 - [] enable file upload from chat
 - [] add sign up with providers
 - [] background sync for firebase requests
-
+- [] see why after navigation it doesn't scroll to the bottom
 - [] security rules
+
 - [] use web workers with firebase
 - [] animate extended fabs
 
