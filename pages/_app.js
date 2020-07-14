@@ -23,6 +23,12 @@ export default function MyApp(props) {
     window.addEventListener('resize', calcVh);
     calcVh();
 
+    Array.from(document.querySelectorAll('[aria-hidden]')).forEach(element => {
+      if (element.getAttribute('aria-hidden') !== '') return;
+
+      element.setAttribute('aria-hidden', 'true');
+    });
+
     return function cleanup() {
       window.removeEventListener('resize', calcVh);
     };

@@ -31,6 +31,7 @@ import BackButton from '../components/BackButton';
 import Skeleton from '@material-ui/lab/Skeleton';
 import clsx from 'clsx';
 import Head from 'next/head';
+import SkipLink from '../components/SkipLink';
 
 // Menu
 const Menu = dynamic(() => import('@material-ui/core/Menu'), {
@@ -234,6 +235,9 @@ const ChatInfo = () => {
 
   return (
     <>
+      <SkipLink href="#members-list">Skip to members list</SkipLink>
+      <SkipLink href="#add-members">Skip to add members</SkipLink>
+
       <Head>
         <link rel="prefetch" href={chat?.avatar?.sources[720].initial} />
       </Head>
@@ -327,11 +331,16 @@ const ChatInfo = () => {
           )}
         </Typography>
 
-        <List className={classes.membersList}>
+        <List id="members-list" className={classes.membersList}>
           {!members?.length
             ? [...new Array(6)].map((chat, chatIndex, chats) => (
                 <React.Fragment key={chatIndex}>
-                  <ListItem alignItems="center" component="a">
+                  <ListItem
+                    alignItems="center"
+                    component="a"
+                    role="listitem"
+                    button
+                  >
                     <ListItemAvatar>
                       <Skeleton
                         animation="wave"
@@ -365,12 +374,14 @@ const ChatInfo = () => {
                       }
                     />
                   </ListItem>
-                  {chatIndex < chats.length - 1 && <Divider />}
+                  {chatIndex < chats.length - 1 && (
+                    <Divider component="li" aria-hidden="true" />
+                  )}
                 </React.Fragment>
               ))
             : members.map((member, index) => (
                 <React.Fragment key={member.id}>
-                  <ListItem alignItems="flex-start">
+                  <ListItem alignItems="flex-start" role="listitem" button>
                     <ListItemAvatar>
                       <Avatar>
                         <Image
@@ -403,13 +414,16 @@ const ChatInfo = () => {
                           onClick={event => openMenu(event, member.id)}
                           aria-controls="edit-member-menu"
                           aria-haspopup="true"
+                          aria-label="show member actions"
                         >
-                          <MoreVert />
+                          <MoreVert aria-hidden="true" />
                         </IconButton>
                       </ListItemSecondaryAction>
                     )}
                   </ListItem>
-                  {index < members.length - 1 && <Divider />}
+                  {index < members.length - 1 && (
+                    <Divider component="li" aria-hidden="true" />
+                  )}
                 </React.Fragment>
               ))}
         </List>
@@ -431,9 +445,10 @@ const ChatInfo = () => {
       </Menu>
 
       <Fab
+        id="add-members"
         className={classes.fab}
         variant="extended"
-        color="primary"
+        color="secondary"
         onClick={openAddMemberDialog}
       >
         <PersonAdd className={classes.fabIcon} />

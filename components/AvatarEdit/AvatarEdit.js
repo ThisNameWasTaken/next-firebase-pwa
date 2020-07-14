@@ -121,6 +121,7 @@ const AvatarEdit = ({
           className={classes.cardActionArea}
           component="label"
           htmlFor="avatar-input"
+          aria-label="tap to upload a photo or change the selected one"
         ></CardActionArea>
         <Photo className={classes.icon} />
         <div className={classes.imageContainer}>

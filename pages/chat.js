@@ -82,9 +82,9 @@ const useChatBubbleStyles = makeStyles(theme => ({
     transform: 'translateY(-16px)',
   },
   paperInfo: {
-    border: `2px solid ${theme.palette.info.main}`,
-    background: fade(theme.palette.info.main, 0.1),
-    color: theme.palette.info.main,
+    border: `2px solid ${'#1870c9'}`,
+    background: fade(theme.palette.info.light, 0.1),
+    color: '#1870c9',
   },
   paperRight: {
     background: '#8338EC',
@@ -108,6 +108,7 @@ const ChatBubble = ({
   mergePrevBubble = false,
   mergeNextBubble = false,
   isInfo = false,
+  alt = '',
 }) => {
   const classes = useChatBubbleStyles();
 
@@ -141,7 +142,7 @@ const ChatBubble = ({
               <Image
                 sources={avatar.sources}
                 preview={avatar.preview}
-                alt={avatar?.alt}
+                alt={alt}
                 width={64}
                 height={64}
               />
@@ -293,6 +294,12 @@ const Chats = props => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    document
+      .querySelector('#message')
+      .setAttribute('aria-label', 'type message');
+  }, []);
+
   return (
     <>
       <AppBar position="fixed" color="inherit">
@@ -313,7 +320,7 @@ const Chats = props => {
         </Toolbar>
       </AppBar>
 
-      <div className={classes.messagesContainer}>
+      <div className={classes.messagesContainer} role="log">
         {messages.map((message, index) => {
           const nextAuthorId =
             index < messages.length - 1
@@ -332,6 +339,7 @@ const Chats = props => {
               mergePrevBubble={message.authorId === prevAuthorId}
               mergeNextBubble={message.authorId === nextAuthorId}
               isInfo={!message.authorId}
+              alt={members[message.authorId]?.alt}
             />
           );
         })}
@@ -389,15 +397,21 @@ const Chats = props => {
           onKeyDown={handleTyping}
           inputRef={register}
           InputProps={{
+            'aria-label': 'type message',
             startAdornment: (
               <InputAdornment position="start">
-                <EmojiEmotionsOutlined style={{ opacity: 0.87 }} />
+                <IconButton aria-label="send image" type="submit">
+                  <EmojiEmotionsOutlined
+                    aria-hidden="true"
+                    style={{ opacity: 0.87 }}
+                  />
+                </IconButton>
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton aria-label="send message" type="submit">
-                  <Send />
+                  <Send aria-hidden="true" />
                 </IconButton>
               </InputAdornment>
             ),

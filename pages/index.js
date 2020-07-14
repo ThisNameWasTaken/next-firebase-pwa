@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import SignOutButton from '../components/SignOutButton';
 import EditUserButton from '../components/EditUserButton';
 import useChats from '../hooks/useChats';
+import SkipLink from '../components/SkipLink';
 
 const useStyles = makeStyles(theme => ({
   actionsDivider: {
@@ -59,6 +60,9 @@ const Index = () => {
 
   return (
     <>
+      <SkipLink href="#chat-list">Skip to chat list</SkipLink>
+      <SkipLink href="#create-chat">Skip to create chat</SkipLink>
+
       <AppBar position="static">
         <Toolbar variant="dense">
           <List>
@@ -82,9 +86,10 @@ const Index = () => {
           />
         </Toolbar>
       </AppBar>
-      <ChatList chats={chats} />
+      <ChatList id="chat-list" chats={chats} />
       <Link href="/create-chat" passHref>
         <Fab
+          id="create-chat"
           variant="extended"
           className={classes.fab}
           color="secondary"

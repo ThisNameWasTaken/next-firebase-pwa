@@ -20,6 +20,7 @@ import useUsers from '../hooks/useUsers';
 import AvatarEdit from '../components/AvatarEdit';
 import UserCheckList from '../components/UserCheckList';
 import { GroupAdd } from '@material-ui/icons';
+import SkipLink from '../components/SkipLink';
 
 const useStyles = makeStyles(theme => ({
   avatarEditContainer: {
@@ -116,6 +117,9 @@ const CreateChat = () => {
 
   return (
     <>
+      <SkipLink href="#select-members">Skip to select members</SkipLink>
+      <SkipLink href="#create-chat">Skip to create chat</SkipLink>
+
       <AppBar position="fixed" color="inherit">
         <Toolbar variant="dense" className={classes.toolBar}>
           <BackButton />
@@ -160,19 +164,21 @@ const CreateChat = () => {
           </Typography>
 
           <UserCheckList
+            id="select-members"
             users={users}
             checked={checked}
             onCheck={handleToggle}
           />
 
           <Fab
+            id="create-chat"
             variant="extended"
             className={classes.createGroupButton}
-            color="primary"
+            color="secondary"
             type="submit"
           >
             <GroupAdd className={classes.createGroupButtonIcon} />
-            Create group
+            Create chat
           </Fab>
         </form>
       </Container>

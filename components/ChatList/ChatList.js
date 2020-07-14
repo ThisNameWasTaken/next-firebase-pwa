@@ -26,6 +26,8 @@ const ChatList = ({ chats, ...otherProps }) => {
               alignItems="center"
               className={classes.chatListItem}
               component="a"
+              role="listitem"
+              button
             >
               <ListItemAvatar>
                 <Skeleton
@@ -54,7 +56,9 @@ const ChatList = ({ chats, ...otherProps }) => {
                 }
               />
             </ListItem>
-            {chatIndex < chats.length - 1 && <Divider />}
+            {chatIndex < chats.length - 1 && (
+              <Divider component="li" aria-hidden="true" />
+            )}
           </React.Fragment>
         ))
       ) : chats.length === 0 ? (
@@ -76,6 +80,7 @@ const ChatList = ({ chats, ...otherProps }) => {
                 className={classes.chatListItem}
                 button
                 component="a"
+                role="listitem"
               >
                 <ListItemAvatar>
                   {chat?.avatar?.preview ? (
@@ -103,7 +108,7 @@ const ChatList = ({ chats, ...otherProps }) => {
                 />
               </ListItem>
             </Link>
-            {chatIndex < chats.length - 1 && <Divider />}
+            {chatIndex < chats.length - 1 && <Divider aria-hidden="true" />}
           </React.Fragment>
         ))
       )}
