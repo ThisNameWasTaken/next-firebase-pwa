@@ -1,6 +1,8 @@
+import 'default-passive-events';
 import React from 'react';
 import Document, { Html, Main, NextScript, Head } from 'next/document';
 import { ServerStyleSheets } from '@material-ui/core/styles';
+
 import { lightTheme } from '../theme';
 
 export default class MyDocument extends Document {
