@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   makeStyles,
   InputAdornment,
@@ -14,13 +16,13 @@ import {
 } from '@material-ui/core';
 import {
   Send,
-  EmojiEmotionsOutlined,
   InfoOutlined,
   AddPhotoAlternate,
+  Close,
 } from '@material-ui/icons';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { get as getCookie } from 'js-cookie';
-import Link from 'next/link';
 
 import useMessages from '../hooks/useMessages';
 import Image from '../components/Image';
@@ -33,7 +35,11 @@ import BackButton from '../components/BackButton';
 import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
 import { delayCallback, cancelDelayCallback } from '../utils/delayCallback';
-import Skeleton from '@material-ui/lab/Skeleton';
+import SkipLink from '../components/SkipLink/SkipLink';
+
+const Dialog = dynamic(() => import('@material-ui/core/Dialog'), {
+  ssr: false,
+});
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -122,6 +128,15 @@ const useChatBubbleStyles = makeStyles(theme => ({
   textInfo: {
     fontWeight: 800,
   },
+  zoomImage: {
+    cursor: 'zoom-in',
+    outline: 'none',
+    border: 'none',
+
+    '&:focus, &:hover': {
+      opacity: 0.7,
+    },
+  },
 }));
 
 const ChatBubble = ({
@@ -133,10 +148,9 @@ const ChatBubble = ({
   mergeNextBubble = false,
   isInfo = false,
   alt = '',
+  onZoomImage = () => {},
 }) => {
   const classes = useChatBubbleStyles();
-
-  console.log({ photo });
 
   return (
     <>
@@ -202,7 +216,15 @@ const ChatBubble = ({
                   />
                 ) : (
                   <Image
-                    className={classes.paperImage}
+                    tabindex="0"
+                    role="button"
+                    onKeyPress={event =>
+                      (event.key === 'Enter' || event.key === 'Space') &&
+                      onZoomImage(photo)
+                    }
+                    onClick={() => onZoomImage(photo)}
+                    aria-label="zoom image"
+                    className={clsx(classes.paperImage, classes.zoomImage)}
                     sources={photo?.sources}
                     alt={photo?.alt || 'media'}
                     preview={photo?.preview}
@@ -293,6 +315,18 @@ const useStyles = makeStyles(theme => ({
     overflowAnchor: 'auto',
     height: '1px',
   },
+  closeImageDialogButton: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    zIndex: 1,
+    color: '#fff',
+    backgroundColor: 'rgba(0, 0, 0, .1)',
+
+    '&:hover, &:focus': {
+      backgroundColor: 'rgba(0, 0, 0, .24)',
+    },
+  },
 }));
 
 const Chats = props => {
@@ -309,6 +343,26 @@ const Chats = props => {
   const { messages, sendMessage, typingUsers, showIsTyping } = useMessages({
     chatId,
   });
+
+  const [photoDialogState, setPhotoDialogState] = useState({
+    open: false,
+    sources: undefined,
+    preview: undefined,
+    width: undefined,
+    height: undefined,
+    alt: undefined,
+  });
+
+  function openImageDialog({ sources, preview, width, height, alt }) {
+    setPhotoDialogState({ open: true, sources, preview, width, height, alt });
+  }
+
+  function closeImageDialog() {
+    setPhotoDialogState(prevState => ({
+      ...prevState,
+      open: false,
+    }));
+  }
 
   function handleTyping(event) {
     if (!window.isTyping) {
@@ -350,6 +404,8 @@ const Chats = props => {
 
   return (
     <>
+      <SkipLink href="#message">Skip to message textfield</SkipLink>
+
       <AppBar position="fixed" color="inherit">
         <Toolbar variant="dense" className={classes.toolBar}>
           <BackButton />
@@ -389,6 +445,7 @@ const Chats = props => {
               mergeNextBubble={message.authorId === nextAuthorId}
               isInfo={!message.authorId}
               alt={members[message.authorId]?.alt}
+              onZoomImage={openImageDialog}
             />
           );
         })}
@@ -471,6 +528,28 @@ const Chats = props => {
           }}
         />
       </form>
+
+      <Dialog
+        fullScreen
+        open={photoDialogState.open}
+        onClose={closeImageDialog}
+      >
+        <IconButton
+          aria-label="close dialog"
+          className={classes.closeImageDialogButton}
+          onClick={closeImageDialog}
+          color="inherit"
+        >
+          <Close aria-hidden="true" />
+        </IconButton>
+        <Image
+          alt={photoDialogState.alt || 'media'}
+          preview={photoDialogState.preview}
+          sources={photoDialogState.sources}
+          width={photoDialogState.width}
+          height={photoDialogState.height}
+        />
+      </Dialog>
     </>
   );
 };

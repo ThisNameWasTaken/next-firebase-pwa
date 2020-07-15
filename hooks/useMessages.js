@@ -79,8 +79,6 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
                     photo: { width: image.width, height: image.height },
                   });
 
-                  console.log({ messageId: doc.id });
-
                   await storage
                     .ref()
                     .child(
