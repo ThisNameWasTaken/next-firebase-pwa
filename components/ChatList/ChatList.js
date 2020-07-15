@@ -61,7 +61,7 @@ const ChatList = ({ chats, ...otherProps }) => {
             )}
           </React.Fragment>
         ))
-      ) : chats.length === 0 ? (
+      ) : chats?.length === 0 ? (
         <div className={classes.noChats}>
           <Typography
             className={classes.noChatsText}
@@ -73,8 +73,8 @@ const ChatList = ({ chats, ...otherProps }) => {
         </div>
       ) : (
         chats.map((chat, chatIndex) => (
-          <React.Fragment key={chat.id}>
-            <Link href={`/chat?chatId=${chat.id}`} passHref>
+          <React.Fragment key={chat?.id}>
+            <Link href={`/chat?chatId=${chat?.id}`} passHref>
               <ListItem
                 alignItems="center"
                 className={classes.chatListItem}
@@ -86,8 +86,8 @@ const ChatList = ({ chats, ...otherProps }) => {
                   {chat?.avatar?.preview ? (
                     <Avatar>
                       <Image
-                        sources={chat.avatar.sources}
-                        preview={chat.avatar.preview}
+                        sources={chat?.avatar?.sources}
+                        preview={chat?.avatar?.preview}
                         alt={chat?.alt}
                         width={40}
                         height={40}
@@ -103,12 +103,14 @@ const ChatList = ({ chats, ...otherProps }) => {
                   )}
                 </ListItemAvatar>
                 <ListItemText
-                  primary={chat.name}
-                  secondary={`${chat.lastMessage.text}`}
+                  primary={chat?.name}
+                  secondary={chat?.lastMessage?.text}
                 />
               </ListItem>
             </Link>
-            {chatIndex < chats.length - 1 && <Divider aria-hidden="true" />}
+            {chatIndex < chats.length - 1 && (
+              <Divider aria-hidden="true" component="li" />
+            )}
           </React.Fragment>
         ))
       )}

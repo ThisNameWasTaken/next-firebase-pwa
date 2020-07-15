@@ -25,8 +25,10 @@ const useChats = () => {
     if (filter) {
       setFilteredChats(
         chats?.filter(chat => {
-          const isMatchingName = chat.name.includes(filter);
-          const isMatchingLastMessage = chat.lastMessage.text.includes(filter);
+          const isMatchingName = chat?.name?.includes(filter);
+          const isMatchingLastMessage = chat?.lastMessage?.text.includes(
+            filter
+          );
 
           return isMatchingName || isMatchingLastMessage;
         })
