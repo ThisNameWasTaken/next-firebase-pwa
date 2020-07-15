@@ -625,6 +625,9 @@ const Chats = props => {
   }
 
   useEffect(() => {
+    console.log({ messages });
+    console.log('didScrollToBottom', window.didScrollToBottom);
+
     if (!window.didScrollToBottom) {
       window.scrollTo(0, document.body.scrollHeight);
       window.didScrollToBottom = messages && messages.length > 0;
@@ -635,6 +638,10 @@ const Chats = props => {
     document
       .querySelector('#message')
       .setAttribute('aria-label', 'type message');
+
+    return function cleanup() {
+      window.didScrollToBottom = false;
+    };
   }, []);
 
   function reply({ author, message }) {
