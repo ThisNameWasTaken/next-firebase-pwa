@@ -194,7 +194,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   repliedMessageText: {
-    padding: theme.spacing(0, 1, 0, 2),
+    padding: theme.spacing(1, 1, 0, 2),
   },
 }));
 
@@ -309,7 +309,7 @@ const ChatBubble = ({
                 <Typography
                   className={classes.repliedMessageText}
                   variant="body2"
-                  noWrap
+                  // noWrap
                 >
                   {repliedMessage.text}
                 </Typography>
@@ -336,7 +336,7 @@ const ChatBubble = ({
           {isSelf && (
             <IconButton
               aria-label="delete message"
-              aria-labelledby={`#${id}`}
+              aria-labelledby={id}
               className={classes.messageDeleteButton}
               color="primary"
               onClick={() => onDelete()}
@@ -346,7 +346,7 @@ const ChatBubble = ({
           )}
           <IconButton
             aria-label="reply to message"
-            aria-labelledby={`#${id}`}
+            aria-labelledby={id}
             className={classes.messageDeleteButton}
             color="primary"
             onClick={() => onReply()}
@@ -744,7 +744,12 @@ const Chats = props => {
           )}
         >
           <div>
-            <Typography noWrap color="primary" variant="subtitle2">
+            <Typography
+              noWrap
+              color="primary"
+              variant="subtitle2"
+              component="p"
+            >
               {replyState?.author?.name}
             </Typography>
             <Typography noWrap variant="body1">
@@ -761,6 +766,7 @@ const Chats = props => {
           )}
 
           <IconButton
+            tabIndex={replyState.show ? 0 : -1}
             aria-label="cancel reply"
             className={classes.replyCancelButton}
             size="small"
@@ -789,6 +795,7 @@ const Chats = props => {
           />
 
           <IconButton
+            tabIndex={photoUploadPreviewState.show ? 0 : -1}
             aria-label="cancel photo upload"
             className={classes.replyCancelButton}
             size="small"
