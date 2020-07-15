@@ -279,6 +279,8 @@ export default function SignUp() {
         .set({ name: formData.name, email: formData.email, alt: formData.alt });
     }
 
+    window.__avatarSrc = undefined;
+
     Router.push('/');
   }
 
@@ -328,6 +330,8 @@ export default function SignUp() {
       setFormData(formData => ({ ...formData, avatar, alt }));
     }
   }, [prevActiveStep]);
+
+  const [src, setSrc] = useState();
 
   return (
     <>
@@ -475,6 +479,7 @@ export default function SignUp() {
                       <AvatarEdit
                         className={classes.avatarEdit}
                         register={avatarForm.register}
+                        onSrcUpdate={setSrc}
                       />
                     </div>
                   </form>
@@ -488,7 +493,7 @@ export default function SignUp() {
               >
                 <div className={classes.cardContent}>
                   <RegisterInfo
-                    avatar={formData.avatar[0]}
+                    src={src}
                     name={formData.name}
                     email={formData.email}
                   />

@@ -73,6 +73,7 @@ const AvatarEdit = ({
   className = '',
   register,
   src: _src = undefined,
+  onSrcUpdate = src => {},
   ...otherProps
 }) => {
   const classes = useStyles();
@@ -92,6 +93,8 @@ const AvatarEdit = ({
         alpha: 1,
       });
       const predictions = await model.classify(imageRef.current);
+
+      onSrcUpdate(src);
 
       setAlt(predictions[0].className);
       console.log('');

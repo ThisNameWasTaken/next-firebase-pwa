@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   List,
   ListItem,
@@ -8,7 +8,6 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import getSrcFromImageFile from '../../utils/getSrcFromImageFile';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -18,17 +17,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const RegisterInfo = ({ email, name, avatar, ...otherProps }) => {
+const RegisterInfo = ({ email, name, src, ...otherProps }) => {
   const classes = useStyles();
-  const [src, setSrc] = useState('');
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setSrc(await getSrcFromImageFile(avatar));
-      } catch (err) {}
-    })();
-  }, []);
 
   return (
     <List {...otherProps}>
