@@ -123,7 +123,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     },
 
     '& $paperImageSkeleton': {
-      background: 'rgba(0, 0, 0, .4)',
+      background: 'rgba(0, 0, 0, .22)',
     },
   },
   paperInfo: {
