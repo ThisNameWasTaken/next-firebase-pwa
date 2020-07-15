@@ -38,10 +38,15 @@ import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
 import { delayCallback, cancelDelayCallback } from '../utils/delayCallback';
 import SkipLink from '../components/SkipLink/SkipLink';
+import getSrcFromImageFile from '../utils/getSrcFromImageFile';
 
 const Dialog = dynamic(() => import('@material-ui/core/Dialog'), {
   ssr: false,
 });
+
+// const AvatarEdit = dynamic(() => import('../components/AvatarEdit'), {
+//   ssr: false,
+// });
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -365,7 +370,7 @@ const useStyles = makeStyles(theme => ({
   textField: {
     width: '100%',
     background: theme.palette.background.paper,
-    zIndex: 1,
+    zIndex: 9,
     position: 'relative',
     padding: theme.spacing(1),
   },
@@ -453,7 +458,7 @@ const useStyles = makeStyles(theme => ({
     left: 0,
     right: 0,
     margin: theme.spacing(1, 1, 0.5, 1),
-    zIndex: 1,
+    zIndex: 2,
     transform: 'translateY(100px)',
     willChange: 'transform',
     transition: theme.transitions.create('transform'),
@@ -476,6 +481,26 @@ const useStyles = makeStyles(theme => ({
     margin: -16,
     width: 64,
     height: 64,
+  },
+  photoUpload: {
+    position: 'fixed',
+    bottom: 72,
+    left: 16,
+    zIndex: 1,
+    transform: 'translateY(200px)',
+    willChange: 'transform',
+    transition: theme.transitions.create('transform'),
+  },
+  photoUploadShow: {
+    transform: 'translateY(0px)',
+  },
+  photoUploadShowWithReply: {
+    transform: 'translateY(-72px)',
+  },
+  photoUploadAvatar: {
+    width: 86,
+    height: 86,
+    borderRadius: 16,
   },
 }));
 
@@ -514,6 +539,29 @@ const Chats = props => {
     message: undefined,
     author: undefined,
   });
+
+  const [photoUploadPreviewState, setPhotoUploadPreviewState] = useState({
+    show: false,
+    src: undefined,
+  });
+
+  async function showPhotoUploadPreview() {
+    const photoUploadElement = document.getElementById('photo-upload');
+
+    const src = await getSrcFromImageFile(photoUploadElement.files[0]);
+
+    setPhotoUploadPreviewState(prevState => ({
+      src,
+      show: true,
+    }));
+  }
+
+  function closePhotoUpload() {
+    setPhotoUploadPreviewState({
+      show: false,
+      src: undefined,
+    });
+  }
 
   function openImageDialog({ sources, preview, width, height, alt }) {
     setPhotoDialogState({ open: true, sources, preview, width, height, alt });
@@ -557,6 +605,7 @@ const Chats = props => {
     });
 
     setReplyState(prevState => ({ ...prevState, show: false }));
+    closePhotoUpload();
     setValue('message', '');
     setValue('photo', undefined);
   }
@@ -716,6 +765,33 @@ const Chats = props => {
           </IconButton>
         </Paper>
 
+        <Paper
+          variant="outlined"
+          className={clsx(
+            classes.photoUpload,
+            photoUploadPreviewState.show && classes.photoUploadShow,
+            photoUploadPreviewState.show &&
+              replyState.show &&
+              classes.photoUploadShowWithReply
+          )}
+        >
+          <Avatar
+            variant="square"
+            className={classes.photoUploadAvatar}
+            alt="photo upload preview"
+            src={photoUploadPreviewState.src}
+          />
+
+          <IconButton
+            aria-label="cancel photo upload"
+            className={classes.replyCancelButton}
+            size="small"
+            onClick={closePhotoUpload}
+          >
+            <Close aria-hidden="true" />
+          </IconButton>
+        </Paper>
+
         <TextField
           placeholder="Type..."
           variant="outlined"
@@ -734,11 +810,18 @@ const Chats = props => {
                   component="label"
                 >
                   <input
+                    id="photo-upload"
                     type="file"
                     accept="image/*"
                     name="photo"
                     ref={register}
                     hidden
+                    onChange={event => {
+                      if (event.target.value) {
+                        showPhotoUploadPreview();
+                      }
+                      console.log(event.target.value);
+                    }}
                   />
                   <AddPhotoAlternate aria-hidden="true" />
                 </IconButton>
