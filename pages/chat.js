@@ -39,6 +39,7 @@ import ChatInfo from '../components/ChatInfo/ChatInfo';
 import { delayCallback, cancelDelayCallback } from '../utils/delayCallback';
 import SkipLink from '../components/SkipLink/SkipLink';
 import getSrcFromImageFile from '../utils/getSrcFromImageFile';
+import { useRouter } from 'next/router';
 
 const Dialog = dynamic(() => import('@material-ui/core/Dialog'), {
   ssr: false,
@@ -638,13 +639,15 @@ const Chats = props => {
     setReplyState(prevState => ({ ...prevState, show: false }));
   }
 
+  const router = useRouter();
+
   return (
     <>
       <SkipLink href="#message">Skip to message textfield</SkipLink>
 
       <AppBar position="fixed" color="inherit">
         <Toolbar variant="dense" className={classes.toolBar}>
-          <BackButton />
+          <BackButton onClick={() => router.push('/')} />
           <List className={classes.list}>
             <ChatInfo chat={chat} />
           </List>
