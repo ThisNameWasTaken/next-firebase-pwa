@@ -3,14 +3,17 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 
 self.addEventListener('message', async event => {
   try {
-    const model = await mobilenet.load({
-      version: 2,
-      alpha: 1,
-    });
-    const predictions = await model.classify(event.data);
+    const { canvas, imageBitmap } = event.data;
 
-    self.postMessage(predictions);
+    const ctxWorker = canvas.getContext('2d');
+    ctxWorker.drawImage(imageBitmap, 0, 0);
+
+    const model = await mobilenet.load();
+
+    const predictions = await model.classify(canvas);
+
+    self.postMessage({ predictions });
   } catch (err) {
-    self.postMessage(err);
+    self.postMessage({ err });
   }
 });
