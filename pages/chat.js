@@ -117,6 +117,14 @@ const useChatBubbleStyles = makeStyles(theme => ({
     borderBottomLeftRadius: 4,
     transform: 'translateY(-16px)',
     overflow: 'hidden',
+
+    '& $repliedMessage': {
+      background: fade(theme.palette.primary.main, 0.1),
+    },
+
+    '& $paperImageSkeleton': {
+      background: 'rgba(0, 0, 0, .4)',
+    },
   },
   paperInfo: {
     border: `2px solid ${'#1870c9'}`,
