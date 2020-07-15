@@ -19,6 +19,7 @@ import {
   InfoOutlined,
   AddPhotoAlternate,
   Close,
+  Delete,
 } from '@material-ui/icons';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -46,6 +47,13 @@ const useChatBubbleStyles = makeStyles(theme => ({
     display: 'flex',
     marginBottom: 8,
     overflowAnchor: 'none',
+    '&:hover > $messageDeleteButton': {
+      opacity: 1,
+    },
+
+    '&:focus > $messageDeleteButton': {
+      opacity: 1,
+    },
   },
   chatBubbleInfo: {
     margin: 'auto',
@@ -56,7 +64,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     },
   },
   chatBubbleLeft: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
     alignSelf: 'flex-start',
     flexDirection: 'row',
     marginRight: 48,
@@ -69,7 +77,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     borderBottomLeftRadius: 4,
   },
   chatBubbleRight: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
     alignSelf: 'flex-end',
     flexDirection: 'row-reverse',
     marginLeft: 48,
@@ -106,6 +114,19 @@ const useChatBubbleStyles = makeStyles(theme => ({
     transform: 'translateY(-16px)',
     overflow: 'hidden',
   },
+  messageDeleteButton: {
+    alignSelf: 'center',
+    marginTop: -32,
+    opacity: 0,
+
+    '&:hover': {
+      opacity: 1,
+    },
+
+    '&:focus': {
+      opacity: 1,
+    },
+  },
   paperImageContainer: {
     width: '100%',
     minWidth: 120,
@@ -122,6 +143,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     background: fade(theme.palette.primary.contrastText, 0.4),
     height: '100%',
   },
+
   text: {
     padding: '.5rem 1rem',
   },
@@ -140,6 +162,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
 }));
 
 const ChatBubble = ({
+  id,
   avatar = '',
   text = '',
   photo = undefined,
@@ -149,6 +172,7 @@ const ChatBubble = ({
   isInfo = false,
   alt = '',
   onZoomImage = () => {},
+  onDelete = () => {},
 }) => {
   const classes = useChatBubbleStyles();
 
@@ -188,7 +212,9 @@ const ChatBubble = ({
               />
             )}
           </Avatar>
+
           <Paper
+            id={id}
             variant="outlined"
             className={clsx(
               isSelf ? classes.paperRight : classes.paperLeft,
@@ -240,6 +266,18 @@ const ChatBubble = ({
               </Typography>
             )}
           </Paper>
+
+          {isSelf && (
+            <IconButton
+              aria-label="delete message"
+              aria-labelledby={`#${id}`}
+              className={classes.messageDeleteButton}
+              color="primary"
+              onClick={() => onDelete()}
+            >
+              <Delete aria-hidden="true" />
+            </IconButton>
+          )}
         </div>
       )}
     </>
@@ -340,7 +378,13 @@ const Chats = props => {
 
   const { chat } = useChat();
 
-  const { messages, sendMessage, typingUsers, showIsTyping } = useMessages({
+  const {
+    messages,
+    sendMessage,
+    typingUsers,
+    showIsTyping,
+    deleteMessage,
+  } = useMessages({
     chatId,
   });
 
@@ -437,6 +481,7 @@ const Chats = props => {
           return (
             <ChatBubble
               key={message.id}
+              id={message.id}
               text={message.text}
               photo={message.photo}
               avatar={members[message.authorId]?.avatar}
@@ -446,6 +491,7 @@ const Chats = props => {
               isInfo={!message.authorId}
               alt={members[message.authorId]?.alt}
               onZoomImage={openImageDialog}
+              onDelete={() => deleteMessage(message.id)}
             />
           );
         })}
