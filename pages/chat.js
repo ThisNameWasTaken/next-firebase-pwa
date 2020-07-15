@@ -557,10 +557,14 @@ const Chats = props => {
   }
 
   function closePhotoUpload() {
-    setPhotoUploadPreviewState({
+    const photoUploadElement = document.getElementById('photo-upload');
+
+    photoUploadElement.value = '';
+
+    setPhotoUploadPreviewState(prevState => ({
+      ...prevState,
       show: false,
-      src: undefined,
-    });
+    }));
   }
 
   function openImageDialog({ sources, preview, width, height, alt }) {
