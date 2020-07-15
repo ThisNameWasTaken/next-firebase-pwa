@@ -46,7 +46,8 @@ const useStyles = makeStyles(theme => ({
  *  preview: string,
  *  alt: string,
  *  width: number | string,
- *  height: number | string
+ *  height: number | string,
+ *  className?: string
  * }} param0
  */
 const Image = ({
@@ -55,6 +56,7 @@ const Image = ({
   alt,
   width,
   height,
+  className = '',
   ...otherProps
 }) => {
   const minWidth = Math.min(
@@ -104,7 +106,11 @@ const Image = ({
   const [ref, inView] = useInView();
 
   return (
-    <picture ref={ref} {...otherProps} className={classes.root}>
+    <picture
+      ref={ref}
+      {...otherProps}
+      className={clsx(classes.root, className)}
+    >
       <div
         className={classes.preview}
         style={{ backgroundImage: `url(${preview})`, width, height }}

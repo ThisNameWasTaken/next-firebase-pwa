@@ -33,6 +33,7 @@ import BackButton from '../components/BackButton';
 import useChat from '../hooks/useChat';
 import ChatInfo from '../components/ChatInfo/ChatInfo';
 import { delayCallback, cancelDelayCallback } from '../utils/delayCallback';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const useChatBubbleStyles = makeStyles(theme => ({
   chatBubble: {
@@ -85,6 +86,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
   paperLeft: {
     borderBottomLeftRadius: 4,
     transform: 'translateY(-16px)',
+    overflow: 'hidden',
   },
   paperInfo: {
     border: `2px solid ${'#1870c9'}`,
@@ -96,6 +98,23 @@ const useChatBubbleStyles = makeStyles(theme => ({
     color: '#fff',
     borderBottomRightRadius: 4,
     transform: 'translateY(-16px)',
+    overflow: 'hidden',
+  },
+  paperImageContainer: {
+    width: '100%',
+    minWidth: 120,
+    position: 'relative',
+  },
+  paperImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  paperImageSkeleton: {
+    background: fade(theme.palette.primary.contrastText, 0.4),
+    height: '100%',
   },
   text: {
     padding: '.5rem 1rem',
@@ -167,24 +186,37 @@ const ChatBubble = ({
           >
             {photo && (
               <div
+                className={classes.paperImageContainer}
                 style={{
-                  width: '100%',
-                  paddingTop: `${(photo.width / photo.height) * 100}%`,
+                  paddingTop: `${(photo.height / photo.width) * 100}%`,
                 }}
               >
-                <Image
-                  style={{ minWidth: 120, display: 'block' }}
-                  sources={photo?.sources}
-                  alt={photo?.alt}
-                  preview={photo?.preview}
-                  width={photo?.width}
-                  height={photo?.height}
-                />
+                {!photo?.sources ? (
+                  <Skeleton
+                    animation="pulse"
+                    variant="rect"
+                    className={clsx(
+                      classes.paperImage,
+                      classes.paperImageSkeleton
+                    )}
+                  />
+                ) : (
+                  <Image
+                    className={classes.paperImage}
+                    sources={photo?.sources}
+                    alt={photo?.alt || 'media'}
+                    preview={photo?.preview}
+                    width={photo?.width}
+                    height={photo?.height}
+                  />
+                )}
               </div>
             )}
-            <Typography variant="body1" className={classes.text}>
-              {text}
-            </Typography>
+            {text && (
+              <Typography variant="body1" className={classes.text}>
+                {text}
+              </Typography>
+            )}
           </Paper>
         </div>
       )}

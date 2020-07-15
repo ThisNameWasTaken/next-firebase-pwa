@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { get as getCookie } from 'js-cookie';
 
 import { useFirebase } from './useFirebase';
+import getSrcFromImageFile from '../utils/getSrcFromImageFile';
 
 const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
   const firebase = useFirebase();
@@ -48,25 +49,58 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
         });
 
       setSendMessage(() => ({ text = '', photo }) => {
-        return firestore
+        const messagesRef = firestore
           .collection('chats')
           .doc(chatId)
-          .collection('messages')
-          .add({
+          .collection('messages');
+
+        if (photo) {
+          const image = document.createElement('img');
+          document.body.appendChild(image);
+          image.style.width = '100vw';
+          image.style.height = 'auto';
+          image.style.position = 'absolute';
+          image.style.top = '-9999vw';
+          image.style.left = '-9999vw';
+          image.style.pointerEvents = 'none';
+          image.style.visibility = 'hidden';
+          image.setAttribute('aria-hidden', 'true');
+
+          getSrcFromImageFile(photo)
+            .then(src => {
+              image.src = src;
+              image.addEventListener(
+                'load',
+                async event => {
+                  const doc = await messagesRef.add({
+                    text,
+                    authorId: userId,
+                    createdAt: Date.now(),
+                    photo: { width: image.width, height: image.height },
+                  });
+
+                  console.log({ messageId: doc.id });
+
+                  await storage
+                    .ref()
+                    .child(
+                      `photos/chats/${chatId}/messages/${doc.id}/${photo.name}`
+                    )
+                    .put(photo);
+
+                  document.body.removeChild(image);
+                },
+                { once: true }
+              );
+            })
+            .catch(console.error);
+        } else {
+          messagesRef.add({
             text,
             authorId: userId,
             createdAt: Date.now(),
-          })
-          .then(doc => {
-            if (photo) {
-              storage
-                .ref()
-                .child(
-                  `photos/chats/${chatId}/messages/${doc.id}/${photo.name}`
-                )
-                .put(photo);
-            }
           });
+        }
       });
 
       setDeleteMessage(() => messageId => {
