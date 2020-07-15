@@ -19,10 +19,10 @@ const useChats = () => {
     }) => {}
   );
   const [filter, setFilter] = useState(null);
-  const [filteredChats, setFilteredChats] = useState(chats);
+  const [filteredChats, setFilteredChats] = useState([]);
 
   useEffect(() => {
-    if (filter) {
+    if (filter && chats) {
       setFilteredChats(
         chats?.filter(chat => {
           const isMatchingName = chat?.name?.includes(filter);

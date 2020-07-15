@@ -16,7 +16,7 @@ const UserInfo = ({ user }) => {
   return (
     <ListItem alignItems="center" className={classes.userInfo}>
       <ListItemAvatar>
-        {user ? (
+        {user?.avatar ? (
           <Avatar>
             <Image
               sources={user?.avatar?.sources}
