@@ -8,8 +8,8 @@ import {
 import clsx from 'clsx';
 import { Photo } from '@material-ui/icons';
 
-import * as tf from '@tensorflow/tfjs';
-import * as mobilenet from '@tensorflow-models/mobilenet';
+// import * as tf from '@tensorflow/tfjs';
+// import * as mobilenet from '@tensorflow-models/mobilenet';
 
 import getSrcFromImageFile from '../../utils/getSrcFromImageFile';
 
@@ -88,15 +88,41 @@ const AvatarEdit = ({
       const src = await getSrcFromImageFile(inputRef.current?.files[0]);
       setSrc(src);
 
-      const model = await mobilenet.load({
-        version: 2,
-        alpha: 1,
+      // const model = await mobilenet.load({
+      //   version: 2,
+      //   alpha: 1,
+      // });
+      // const predictions = await model.classify(imageRef.current);
+
+      const img = new Image();
+      img.src = src;
+      img.addEventListener('load', event => {
+        console.log(img.width, img.height);
+
+        const canvasWorker = new Worker('/canvas.worker.js');
+
+        const canvas = document.createElement('canvas');
+
+        document.body.appendChild(canvas);
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const offscreenCanvas = canvas.transferControlToOffscreen();
+
+        createImageBitmap(img, 0, 0, img.width, img.height)
+          .then(imageBitmap => {
+            canvasWorker.postMessage({ canvas: offscreenCanvas, imageBitmap }, [
+              offscreenCanvas,
+              imageBitmap,
+            ]);
+          })
+          .catch(console.error);
       });
-      const predictions = await model.classify(imageRef.current);
 
       onSrcUpdate(src);
 
-      setAlt(predictions[0].className);
+      setAlt('media');
       console.log('');
     } catch (err) {
       requestAnimationFrame(updateImagePreview);
