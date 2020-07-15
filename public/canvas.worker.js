@@ -17,8 +17,8 @@ self.onmessage = function (e) {
       model
         .classify(canvasB)
         .then(predictions => {
-          console.log('Predictions: ');
           console.log(predictions);
+          self.postMessage({ predictions });
         })
         .catch(console.error);
     })

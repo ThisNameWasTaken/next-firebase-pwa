@@ -3,6 +3,7 @@ import { get as getCookie } from 'js-cookie';
 
 import { useFirebase } from './useFirebase';
 import getSrcFromImageFile from '../utils/getSrcFromImageFile';
+import getPredictions from '../utils/getPredictions';
 
 const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
   const firebase = useFirebase();
@@ -82,6 +83,7 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
             getSrcFromImageFile(photo)
               .then(src => {
                 image.src = src;
+
                 image.addEventListener(
                   'load',
                   async event => {
@@ -91,6 +93,19 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
                     };
 
                     const doc = await messagesRef.add(message);
+
+                    getPredictions(src)
+                      .then(predictions => {
+                        console.log('upload', predictions);
+
+                        return messagesRef
+                          .doc(doc.id)
+                          .update({ photoAlt: predictions[0].className });
+                      })
+                      .then(() => {
+                        console.log('upload successful');
+                      })
+                      .catch(console.error);
 
                     await storage
                       .ref()

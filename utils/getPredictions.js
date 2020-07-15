@@ -19,7 +19,7 @@ export default function getPredictions(src) {
       tensorFlowWorker.addEventListener('message', event => {
         const { predictions, err } = event.data;
 
-        err ? resolve(predictions) : reject(err);
+        err ? reject(err) : resolve(predictions);
 
         tensorFlowWorker.terminate();
       });

@@ -203,6 +203,7 @@ const ChatBubble = ({
   avatar = '',
   text = '',
   photo = undefined,
+  photoAlt = 'media',
   repliedMessage = undefined,
   isSelf = false,
   mergePrevBubble = false,
@@ -291,7 +292,7 @@ const ChatBubble = ({
                     aria-label="zoom image"
                     className={clsx(classes.paperImage, classes.zoomImage)}
                     sources={photo?.sources}
-                    alt={photo?.alt || 'media'}
+                    alt={photoAlt || 'media'}
                     preview={photo?.preview}
                     width={photo?.width}
                     height={photo?.height}
@@ -675,6 +676,7 @@ const Chats = props => {
               id={message.id}
               text={message.text}
               photo={message.photo}
+              photoAlt={message.photoAlt}
               repliedMessage={message.repliedMessage}
               avatar={members[message.authorId]?.avatar}
               isSelf={message.authorId === userId}
