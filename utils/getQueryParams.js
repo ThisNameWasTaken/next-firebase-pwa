@@ -9,7 +9,7 @@ export default function getQueryParams() {
 
   queryParamsString.split('&').forEach(keyValueString => {
     const [key, value] = keyValueString.split('=');
-    queryParams[decodeURI(key)] = decodeURI(value);
+    queryParams[decodeURI(key)] = decodeURI(value.split('#')[0]);
   });
 
   return queryParams;
