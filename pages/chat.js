@@ -20,6 +20,7 @@ import {
   AddPhotoAlternate,
   Close,
   Delete,
+  Reply,
 } from '@material-ui/icons';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -52,6 +53,14 @@ const useChatBubbleStyles = makeStyles(theme => ({
     },
 
     '&:focus > $messageDeleteButton': {
+      opacity: 1,
+    },
+
+    '&:hover > $messageReplyButton': {
+      opacity: 1,
+    },
+
+    '&:focus > $messageReplyButton': {
       opacity: 1,
     },
   },
@@ -93,6 +102,7 @@ const useChatBubbleStyles = makeStyles(theme => ({
     width: 30,
     height: 30,
     margin: '0px 8px',
+    alignSelf: 'flex-end',
   },
   hideAvatar: {
     opacity: 0,
@@ -127,6 +137,19 @@ const useChatBubbleStyles = makeStyles(theme => ({
       opacity: 1,
     },
   },
+  messageReplyButton: {
+    alignSelf: 'center',
+    marginTop: -32,
+    opacity: 0,
+
+    '&:hover': {
+      opacity: 1,
+    },
+
+    '&:focus': {
+      opacity: 1,
+    },
+  },
   paperImageContainer: {
     width: '100%',
     minWidth: 120,
@@ -143,7 +166,6 @@ const useChatBubbleStyles = makeStyles(theme => ({
     background: fade(theme.palette.primary.contrastText, 0.4),
     height: '100%',
   },
-
   text: {
     padding: '.5rem 1rem',
   },
@@ -159,6 +181,16 @@ const useChatBubbleStyles = makeStyles(theme => ({
       opacity: 0.7,
     },
   },
+  repliedMessage: {
+    color: 'inherit',
+    textDecoration: 'none',
+    background: 'rgba(255, 255, 255, .1)',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  repliedMessageText: {
+    padding: theme.spacing(0, 1, 0, 2),
+  },
 }));
 
 const ChatBubble = ({
@@ -166,6 +198,7 @@ const ChatBubble = ({
   avatar = '',
   text = '',
   photo = undefined,
+  repliedMessage = undefined,
   isSelf = false,
   mergePrevBubble = false,
   mergeNextBubble = false,
@@ -173,6 +206,7 @@ const ChatBubble = ({
   alt = '',
   onZoomImage = () => {},
   onDelete = () => {},
+  onReply = () => {},
 }) => {
   const classes = useChatBubbleStyles();
 
@@ -260,6 +294,32 @@ const ChatBubble = ({
                 )}
               </div>
             )}
+            {repliedMessage && (
+              <a
+                href={`#${repliedMessage.id}`}
+                className={classes.repliedMessage}
+                aria-label="scroll to the message"
+              >
+                <Typography
+                  className={classes.repliedMessageText}
+                  variant="body2"
+                  noWrap
+                >
+                  {repliedMessage.text}
+                </Typography>
+                {repliedMessage.photo && (
+                  <Avatar variant="square">
+                    <Image
+                      sources={repliedMessage.photo?.sources}
+                      alt={repliedMessage.photo?.alt || 'media'}
+                      preview={repliedMessage.photo?.preview}
+                      width={64}
+                      height={64}
+                    />
+                  </Avatar>
+                )}
+              </a>
+            )}
             {text && (
               <Typography variant="body1" className={classes.text}>
                 {text}
@@ -278,6 +338,15 @@ const ChatBubble = ({
               <Delete aria-hidden="true" />
             </IconButton>
           )}
+          <IconButton
+            aria-label="reply to message"
+            aria-labelledby={`#${id}`}
+            className={classes.messageDeleteButton}
+            color="primary"
+            onClick={() => onReply()}
+          >
+            <Reply aria-hidden="true" />
+          </IconButton>
         </div>
       )}
     </>
@@ -285,14 +354,20 @@ const ChatBubble = ({
 };
 
 const useStyles = makeStyles(theme => ({
-  textField: {
-    padding: theme.spacing(1),
+  form: {
     position: 'fixed',
     bottom: 0,
     left: 0,
     right: 0,
     zIndex: 1,
-    background: theme.palette.background.default,
+    background: theme.palette.background.paper,
+  },
+  textField: {
+    width: '100%',
+    background: theme.palette.background.paper,
+    zIndex: 1,
+    position: 'relative',
+    padding: theme.spacing(1),
   },
   toolBar: {
     padding: 0,
@@ -365,6 +440,43 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: 'rgba(0, 0, 0, .24)',
     },
   },
+  replyPreview: {
+    background: theme.palette.background.paper,
+    padding: theme.spacing(1, 2),
+    borderRadius: 16,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'fixed',
+    bottom: 72,
+    left: 0,
+    right: 0,
+    margin: theme.spacing(1, 1, 0.5, 1),
+    zIndex: 1,
+    transform: 'translateY(100px)',
+    willChange: 'transform',
+    transition: theme.transitions.create('transform'),
+  },
+  showReply: {
+    transform: 'translateY(0)',
+  },
+  replyCancelButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 2,
+    color: '#fff',
+    background: 'rgba(0, 0, 0, .45)',
+    '&:hover, &:focus': {
+      background: 'rgba(0, 0, 0, .65)',
+    },
+  },
+  replyPhoto: {
+    margin: -16,
+    width: 64,
+    height: 64,
+  },
 }));
 
 const Chats = props => {
@@ -395,6 +507,12 @@ const Chats = props => {
     width: undefined,
     height: undefined,
     alt: undefined,
+  });
+
+  const [replyState, setReplyState] = useState({
+    show: false,
+    message: undefined,
+    author: undefined,
   });
 
   function openImageDialog({ sources, preview, width, height, alt }) {
@@ -428,7 +546,17 @@ const Chats = props => {
 
   function onSubmit({ message, photo }) {
     console.log({ message, photo: photo[0] });
-    sendMessage({ text: message, photo: photo[0] });
+    console.log({ replyState });
+
+    const repliedMessage = replyState.show ? replyState.message : undefined;
+
+    sendMessage({
+      text: message,
+      photo: photo[0],
+      repliedMessage,
+    });
+
+    setReplyState(prevState => ({ ...prevState, show: false }));
     setValue('message', '');
     setValue('photo', undefined);
   }
@@ -445,6 +573,16 @@ const Chats = props => {
       .querySelector('#message')
       .setAttribute('aria-label', 'type message');
   }, []);
+
+  function reply({ author, message }) {
+    console.log({ author, message });
+    setReplyState({ show: true, author, message });
+    document.getElementById('message')?.focus();
+  }
+
+  function cancelReply() {
+    setReplyState(prevState => ({ ...prevState, show: false }));
+  }
 
   return (
     <>
@@ -484,6 +622,7 @@ const Chats = props => {
               id={message.id}
               text={message.text}
               photo={message.photo}
+              repliedMessage={message.repliedMessage}
               avatar={members[message.authorId]?.avatar}
               isSelf={message.authorId === userId}
               mergePrevBubble={message.authorId === prevAuthorId}
@@ -492,6 +631,12 @@ const Chats = props => {
               alt={members[message.authorId]?.alt}
               onZoomImage={openImageDialog}
               onDelete={() => deleteMessage(message.id)}
+              onReply={() =>
+                reply({
+                  author: members[message.authorId],
+                  message,
+                })
+              }
             />
           );
         })}
@@ -535,7 +680,42 @@ const Chats = props => {
         <div className={classes.anchor} />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+        <Paper
+          variant="outlined"
+          className={clsx(
+            classes.replyPreview,
+            replyState.show && classes.showReply
+          )}
+        >
+          <div>
+            <Typography noWrap color="primary" variant="subtitle2">
+              {replyState?.author?.name}
+            </Typography>
+            <Typography noWrap variant="body1">
+              {replyState?.message?.text}
+            </Typography>
+          </div>
+
+          {replyState?.message?.photo && (
+            <div>
+              <Avatar className={classes.replyPhoto} variant="square">
+                <Image width={64} height={64} {...replyState.message.photo} />
+              </Avatar>
+            </div>
+          )}
+
+          <IconButton
+            aria-label="cancel reply"
+            className={classes.replyCancelButton}
+            size="small"
+            onClick={cancelReply}
+            color="inherit"
+          >
+            <Close aria-hidden="true"></Close>
+          </IconButton>
+        </Paper>
+
         <TextField
           placeholder="Type..."
           variant="outlined"

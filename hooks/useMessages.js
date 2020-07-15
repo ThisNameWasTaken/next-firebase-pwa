@@ -11,7 +11,9 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
   const [
     sendMessage,
     setSendMessage,
-  ] = useState(() => ({ text = '', photo = undefined }) => {});
+  ] = useState(
+    () => ({ text = '', photo = undefined, repliedMessage = undefined }) => {}
+  );
   const [
     deleteMessage,
     setDeleteMessage,
@@ -48,58 +50,66 @@ const useMessages = ({ chatId: _chatId, messagesDefault = [] }) => {
           );
         });
 
-      setSendMessage(() => ({ text = '', photo }) => {
-        const messagesRef = firestore
-          .collection('chats')
-          .doc(chatId)
-          .collection('messages');
+      setSendMessage(
+        () => ({ text = '', photo, repliedMessage = undefined }) => {
+          const messagesRef = firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages');
 
-        if (photo) {
-          const image = document.createElement('img');
-          document.body.appendChild(image);
-          image.style.width = '100vw';
-          image.style.height = 'auto';
-          image.style.position = 'absolute';
-          image.style.top = '-9999vw';
-          image.style.left = '-9999vw';
-          image.style.pointerEvents = 'none';
-          image.style.visibility = 'hidden';
-          image.setAttribute('aria-hidden', 'true');
-
-          getSrcFromImageFile(photo)
-            .then(src => {
-              image.src = src;
-              image.addEventListener(
-                'load',
-                async event => {
-                  const doc = await messagesRef.add({
-                    text,
-                    authorId: userId,
-                    createdAt: Date.now(),
-                    photo: { width: image.width, height: image.height },
-                  });
-
-                  await storage
-                    .ref()
-                    .child(
-                      `photos/chats/${chatId}/messages/${doc.id}/${photo.name}`
-                    )
-                    .put(photo);
-
-                  document.body.removeChild(image);
-                },
-                { once: true }
-              );
-            })
-            .catch(console.error);
-        } else {
-          messagesRef.add({
+          const message = {
             text,
             authorId: userId,
             createdAt: Date.now(),
-          });
+          };
+
+          if (repliedMessage) {
+            message.repliedMessage = repliedMessage;
+          }
+
+          if (photo) {
+            const image = document.createElement('img');
+            document.body.appendChild(image);
+            image.style.width = '100vw';
+            image.style.height = 'auto';
+            image.style.position = 'absolute';
+            image.style.top = '-9999vw';
+            image.style.left = '-9999vw';
+            image.style.pointerEvents = 'none';
+            image.style.visibility = 'hidden';
+            image.setAttribute('aria-hidden', 'true');
+
+            getSrcFromImageFile(photo)
+              .then(src => {
+                image.src = src;
+                image.addEventListener(
+                  'load',
+                  async event => {
+                    message.photo = {
+                      width: image.width,
+                      height: image.height,
+                    };
+
+                    const doc = await messagesRef.add(message);
+
+                    await storage
+                      .ref()
+                      .child(
+                        `photos/chats/${chatId}/messages/${doc.id}/${photo.name}`
+                      )
+                      .put(photo);
+
+                    document.body.removeChild(image);
+                  },
+                  { once: true }
+                );
+              })
+              .catch(console.error);
+          } else {
+            messagesRef.add(message);
+          }
         }
-      });
+      );
 
       setDeleteMessage(() => messageId => {
         return firestore
