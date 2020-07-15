@@ -1,5 +1,5 @@
 // @ts-ignore
-import TensorFlowWorker from '../workers/tensorflow.worker';
+// import TensorFlowWorker from '../workers/tensorflow.worker';
 
 export default function getPredictions(src) {
   return new Promise((resolve, reject) => {
@@ -7,7 +7,7 @@ export default function getPredictions(src) {
     img.src = src;
 
     img.addEventListener('load', async event => {
-      const tensorFlowWorker = new TensorFlowWorker();
+      const tensorFlowWorker = new Worker('/canvas.worker.js');
 
       const canvas = document.createElement('canvas');
 
